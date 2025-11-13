@@ -17,9 +17,9 @@ class Indexer:
     and does not perform I/O (to avoid concurrent file writes).
     """
 
-    def __init__(self, tokenizer, database):
-        self.tokenizer = tokenizer
+    def __init__(self, database, tokenizer):
         self.database = database
+        self.tokenizer = tokenizer
         # Inverted index: term -> list of [doc_id, freq]
         self.index = defaultdict(list)
         self._lock = threading.Lock()
@@ -28,6 +28,12 @@ class Indexer:
         self._flush_interval = None
         self._stop_event = threading.Event()
         self._flusher_thread = None
+        
+        # Load index from disk if it exists
+        loaded_index = self.database.load_index()
+        if loaded_index:
+            for term, postings in loaded_index.items():
+                self.index[term] = postings
 
     def index_document(self, doc_id, tokens):
         """Thread-safe update of the in-memory index. Does NOT persist to disk.
@@ -85,6 +91,9 @@ class Indexer:
             except Exception:
                 # Swallow exceptions in background flusher to avoid thread death.
                 pass
+
+    # Alias for tests
+    add_document = index_document
 
     def stop_auto_flush(self, timeout=1.0):
         """Stop the background flusher (if running) and wait up to `timeout` seconds."""

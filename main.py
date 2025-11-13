@@ -2,7 +2,16 @@
 import logging
 import os
 import sys
-from src.config import Config
+import importlib.util
+
+# Import Config from the file directly (not the package)
+# Python prefers packages over files, so we need to load the file explicitly
+_config_path = os.path.join(os.path.dirname(__file__), 'src', 'config.py')
+spec = importlib.util.spec_from_file_location('config_module', _config_path)
+config_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(config_module)
+Config = config_module.Config
+
 from src.crawler.spider import Spider
 from src.indexing.indexer import Indexer
 from src.processing.tokenizer import Tokenizer
@@ -38,8 +47,10 @@ def main():
     # Initialize components
     tokenizer = Tokenizer()
     database = Database(os.path.join(config.storage_dir, config.index_file))
-    indexer = Indexer(tokenizer, database)
-    ranker = Ranker(database)
+    # Indexer expects (database, tokenizer)
+    indexer = Indexer(database, tokenizer)
+    # Ranker expects an indexer instance
+    ranker = Ranker(indexer)
     spider = Spider(
         tokenizer, 
         indexer, 

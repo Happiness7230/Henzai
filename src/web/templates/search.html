@@ -1,25 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<title>Search Engine</title>
-</head>
-<body>
-<h1>Search Engine UI</h1>
-<form action="/search" method="post">
-        <input type="text" name="query" placeholder="Enter search query" required>
-        <button type="submit">Search</button>
-      </form>
-      {% if results %}
-          <h2>Results:</h2>
-          <ul>
-              {% for doc, score in results %}
-                  <li><a href="{{ doc }}">{{ doc }}</a> (Score: {{ score }})</li>
-              {% endfor %}
-          </ul>
-      {% endif %}
-      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Search • Hybrid Search Engine{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <header class="search-header">
+        <div class="header-right">
+            <button id="settingsBtn" class="icon-btn" aria-label="Search settings">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+            <button id="clearCache" class="icon-btn" aria-label="Clear cache">
+                <i class="fas fa-broom"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="search-main">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Search Engine Logo" class="logo" onerror="this.style.display='none'">
+            <h1 class="logo-text">Hybrid Search</h1>
+        </div>
+
+        <div class="search-box-container">
+            <form id="searchForm" class="search-form" autocomplete="off">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input
+                        id="searchInput"
+                        type="text"
+                        class="search-input"
+                        placeholder="Search the web or your indexed content"
+                        aria-label="Search query"
+                        autofocus
+                    >
+                    <button type="button" id="clearBtn" class="clear-btn icon-btn hidden" aria-label="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button type="button" id="voiceBtn" class="voice-btn icon-btn" aria-label="Voice search">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+                <div id="autocomplete" class="autocomplete hidden"></div>
+
+                <div class="search-buttons">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                    </button>
+                    <button type="button" id="luckyBtn" class="btn btn-secondary">
+                        <i class="fas fa-bolt"></i>
+                        <span>I'm Feeling Lucky</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <section class="search-mode" aria-label="Search mode selector">
+            <label for="modeButtons">Search mode</label>
+            <div id="modeButtons" class="mode-buttons">
+                <button type="button" class="mode-btn active" data-mode="hybrid">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Hybrid</span>
+                </button>
+                <button type="button" class="mode-btn" data-mode="local">
+                    <i class="fas fa-database"></i>
+                    <span>Local</span>
+                </button>
+                <button type="button" class="mode-btn" data-mode="serpapi">
+                    <i class="fas fa-globe"></i>
+                    <span>Web</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="quick-stats" aria-label="Quick statistics">
+            <div class="stat-item">
+                <i class="fas fa-database"></i>
+                <span id="indexedCount">Loading indexed content…</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-search"></i>
+                <span id="searchCount">0 searches</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-chart-line"></i>
+                <span id="cacheHitRate">0% cache hit</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="search-footer">
+        <div class="footer-links">
+            <a href="#" onclick="return false;">About</a>
+            <a href="#" onclick="return false;">Privacy</a>
+            <a href="#" onclick="return false;">Terms</a>
+            <a href="#" onclick="return false;">Support</a>
+        </div>
+        <div class="footer-info">
+            Built with ❤️ for hybrid search experiences.
+        </div>
+    </footer>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-content">
+        <header class="modal-header">
+            <h2 id="settingsTitle">Search Settings</h2>
+            <button id="closeSettings" class="icon-btn" aria-label="Close settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </header>
+
+        <div class="modal-body">
+            <section class="setting-group">
+                <h3>Search Mode</h3>
+                <p>Select your preferred default mode above. Changes apply instantly.</p>
+            </section>
+
+            <section class="setting-group">
+                <h3>Cache</h3>
+                <p>Clear cached search results if you need a fresh crawl or updated ranking.</p>
+                <button id="modalClearCache" class="btn btn-outline">
+                    <i class="fas fa-trash-alt"></i>
+                    Clear Cache
+                </button>
+            </section>
+
+            <section class="setting-group">
+                <h3>About</h3>
+                <p>This hybrid engine blends local index results with live web results from SerpAPI when enabled.</p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modalClear = document.getElementById('modalClearCache');
+    const headerClear = document.getElementById('clearCache');
+    if (modalClear && headerClear) {
+        modalClear.addEventListener('click', () => headerClear.click());
+    }
+});
+</script>
+<script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

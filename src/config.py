@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 class Config:
     # Flask Settings
     flask_env: str
-    flask_port: int
-    flask_debug: bool
+    flask_port: 5000
+    flask_debug: True
 
     # Crawler Settings
     max_workers: int
@@ -32,7 +32,7 @@ class Config:
 
     # Ranking Settings
     min_term_frequency: int
-    max_results: int
+    max_results: 10
 
     # Debug Settings
     log_level: str

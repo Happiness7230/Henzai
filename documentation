@@ -1,0 +1,9 @@
+The first edit was the folder structure containing the skeleton of the search engine app; 
+The next step was to do a code review of weaknesses and necessary improvement I can make to my codebase;
+Used TF-IDF initially but upgrade it to BM25 which is better;
+I want to have my search crawl the web live, insted of having an index document that reads queries as json then return an output.
+Used TF-IDF initially but upgrade it to BM25 which is better;
+Nov 6, I finished the phase 2 adjustments that uses stemming, stop words, search analytics, query autocomplete, algorithm comparism BM25 vs TF-IDF
+4, Google has paid APIs but I want a free one, I will either go for Bing or DuckDuckGo I have two options: A(fast) add a simple adapter for Bing (or DuckDUckGI if I want a free non-API approach), aggregator, and wire it into app.py. I’ll include caching and a small test.
+Option B (safer, less code): Provide a ready-to-run adapter skeleton and a quick guide to plug in API keys and enable live search.
+Pagination summary: backend logic, API response, Query parameters, Total Pages Calc, Result SLicing, and a working HTML UI

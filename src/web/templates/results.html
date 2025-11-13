@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Results • Hybrid Search Engine{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+    <header class="results-header">
+        <div class="header-left">
+            <a href="{{ url_for('index') }}" class="logo-link" aria-label="Go to search">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="logo-small" onerror="this.style.display='none'">
+            </a>
+            <form id="searchForm" class="header-search-form" autocomplete="off">
+                <div class="header-search-box">
+                    <input id="searchInput" type="text" class="header-search-input" placeholder="Search the web or your indexed content" aria-label="Search query" value="{{ query or '' }}">
+                    <button type="button" id="clearBtn" class="icon-btn" aria-label="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button type="submit" class="search-submit-btn" aria-label="Submit search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="header-right">
+            <button id="settingsBtn" class="icon-btn" aria-label="Search settings">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+        </div>
+    </header>
+
+    <nav class="results-nav" aria-label="Result types">
+        <div class="tabs">
+            <button class="tab active" data-tab="web">
+                <i class="fas fa-search"></i>
+                <span>All</span>
+            </button>
+            <button class="tab" data-tab="news">
+                <i class="fas fa-newspaper"></i>
+                <span>News</span>
+            </button>
+            <button class="tab" data-tab="images">
+                <i class="fas fa-image"></i>
+                <span>Images</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="results-content">
+        <aside class="filters-panel" aria-label="Search filters">
+            <div class="filters-header">
+                <h3>Filters</h3>
+                <button id="clearFilters" class="btn btn-inline">Reset</button>
+            </div>
+
+            <div class="filter-group">
+                <label for="timeFilter">Time</label>
+                <select id="timeFilter">
+                    <option value="">Any time</option>
+                    <option value="d">Past 24 hours</option>
+                    <option value="w">Past week</option>
+                    <option value="m">Past month</option>
+                    <option value="y">Past year</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Sources</span>
+                <label class="checkbox">
+                    <input type="checkbox" id="localOnly">
+                    <span>Local results only</span>
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="webOnly">
+                    <span>Web results only</span>
+                </label>
+            </div>
+
+            <div class="filter-actions">
+                <button id="applyFilters" class="btn btn-primary">Apply filters</button>
+            </div>
+        </aside>
+
+        <section class="results-main">
+            <div id="searchInfo" class="search-info"></div>
+
+            <div id="answerBox" class="answer-box hidden">
+                <div class="answer-header">
+                    <h2 class="answer-title"></h2>
+                    <a class="answer-link" href="#" target="_blank" rel="noopener"></a>
+                </div>
+                <p class="answer-text"></p>
+            </div>
+
+            <div id="knowledgeGraph" class="knowledge-graph hidden">
+                <div class="kg-media">
+                    <img class="kg-image" alt="Knowledge graph image">
+                </div>
+                <div class="kg-content">
+                    <h3 class="kg-title"></h3>
+                    <p class="kg-type"></p>
+                    <p class="kg-description"></p>
+                    <a class="kg-website" href="#" target="_blank" rel="noopener"></a>
+                </div>
+            </div>
+
+            <div id="resultsList" class="results-list">
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>Enter a query above to see results.</p>
+                </div>
+            </div>
+
+            <div id="relatedSearches" class="related-searches hidden">
+                <h3>Related searches</h3>
+                <div class="related-list"></div>
+            </div>
+
+            <div class="pagination-controls">
+                <button id="prevPage" class="btn btn-outline" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    Previous
+                </button>
+                <button id="nextPage" class="btn btn-outline" disabled>
+                    Next
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="resultSettingsTitle">
+    <div class="modal-content">
+        <header class="modal-header">
+            <h2 id="resultSettingsTitle">Results Settings</h2>
+            <button id="closeSettings" class="icon-btn" aria-label="Close settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </header>
+        <div class="modal-body">
+            <section class="setting-group">
+                <h3>Display density</h3>
+                <p>Compact and comfortable layouts are coming soon.</p>
+            </section>
+            <section class="setting-group">
+                <h3>Safe search</h3>
+                <p>Configure safe search in the hybrid engine configuration.</p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/filters.js') }}"></script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

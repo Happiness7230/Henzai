@@ -1,0 +1,285 @@
+{
+    "info": {
+      "name": "Search Engine API - Phase 2",
+      "description": "Complete API collection for the hybrid search engine",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:5000",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "Search",
+        "item": [
+          {
+            "name": "Search (GET)",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/search?q=python programming&max_results=10",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search"],
+                "query": [
+                  {
+                    "key": "q",
+                    "value": "python programming"
+                  },
+                  {
+                    "key": "max_results",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Search (POST)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"q\": \"machine learning\",\n  \"max_results\": 10,\n  \"mode\": \"hybrid\",\n  \"safe_search\": true,\n  \"region\": \"us-en\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/search",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search"]
+              }
+            }
+          },
+          {
+            "name": "Search with Filters",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"q\": \"artificial intelligence\",\n  \"max_results\": 10,\n  \"filters\": {\n    \"site\": \"example.com\",\n    \"filetype\": \"pdf\"\n  },\n  \"time_period\": \"m\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/search",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search"]
+              }
+            }
+          },
+          {
+            "name": "Autocomplete Suggestions",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/suggestions?q=python&max=10",
+                "host": ["{{base_url}}"],
+                "path": ["api", "suggestions"],
+                "query": [
+                  {
+                    "key": "q",
+                    "value": "python"
+                  },
+                  {
+                    "key": "max",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "News Search",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/search/news?q=technology&max_results=10",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search", "news"],
+                "query": [
+                  {
+                    "key": "q",
+                    "value": "technology"
+                  },
+                  {
+                    "key": "max_results",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Image Search",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/search/images?q=cats&max_results=20",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search", "images"],
+                "query": [
+                  {
+                    "key": "q",
+                    "value": "cats"
+                  },
+                  {
+                    "key": "max_results",
+                    "value": "20"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Set Search Mode",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"mode\": \"hybrid\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/search/mode",
+                "host": ["{{base_url}}"],
+                "path": ["api", "search", "mode"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Crawling",
+        "item": [
+          {
+            "name": "Crawl URLs",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"urls\": [\n    \"https://example.com\",\n    \"https://example.com/page2\"\n  ],\n  \"max_depth\": 2\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/crawl",
+                "host": ["{{base_url}}"],
+                "path": ["api", "crawl"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Analytics & Stats",
+        "item": [
+          {
+            "name": "Get Analytics",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/analytics",
+                "host": ["{{base_url}}"],
+                "path": ["api", "analytics"]
+              }
+            }
+          },
+          {
+            "name": "Get System Stats",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/stats",
+                "host": ["{{base_url}}"],
+                "path": ["api", "stats"]
+              }
+            }
+          },
+          {
+            "name": "Get Prometheus Metrics",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/metrics",
+                "host": ["{{base_url}}"],
+                "path": ["api", "metrics"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cache Management",
+        "item": [
+          {
+            "name": "Get Cache Stats",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/cache/stats",
+                "host": ["{{base_url}}"],
+                "path": ["api", "cache", "stats"]
+              }
+            }
+          },
+          {
+            "name": "Clear Cache",
+            "request": {
+              "method": "POST",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/cache/clear",
+                "host": ["{{base_url}}"],
+                "path": ["api", "cache", "clear"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Health & Monitoring",
+        "item": [
+          {
+            "name": "Health Check",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/health",
+                "host": ["{{base_url}}"],
+                "path": ["health"]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
