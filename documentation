@@ -7,3 +7,19 @@ Nov 6, I finished the phase 2 adjustments that uses stemming, stop words, search
 4, Google has paid APIs but I want a free one, I will either go for Bing or DuckDuckGo I have two options: A(fast) add a simple adapter for Bing (or DuckDUckGI if I want a free non-API approach), aggregator, and wire it into app.py. I’ll include caching and a small test.
 Option B (safer, less code): Provide a ready-to-run adapter skeleton and a quick guide to plug in API keys and enable live search.
 Pagination summary: backend logic, API response, Query parameters, Total Pages Calc, Result SLicing, and a working HTML UI
+13/Nov/2025; Implemented a hybrid search that takes local indexed URLS and store it as a JSON then return it to users, and WEb api key that calls SERP duckduckgo API documentation and crawls the web then return users result and filter it.
+Improved the UI to make a google-like feel; though my results still looks like it is in it early stage; I am not giving up; The competition is in a 15 days time; More corrections and adjustment will be on adding more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+Nov 14, 2025; I have implemented a hybrid search that takes local indexed URLS and store it as a JSON then return it to users, and WEb api key that calls SERP duckduckgo API documentation and crawls the web then return users result and filter it.
+Improved the UI to make a google-like feel; though my results still looks like it is in it early stage; I am not giving up; The competition is in a 15 days time; More corrections and adjustment will be on adding more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+I made my first session of a search engine that is working perfectly; I have a local indexed URLS and store it as a JSON then return it to users, and WEb api key that calls SERP duckduckgo API documentation and crawls the web then return users result and filter it.
+I have finlly mde a progresssssssssss......
+Next steps:
+1. Add more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+2. Add more features to the search engine like pagination, sorting, filtering, and more.
+3. Add more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+4. Add more features to the search engine like pagination, sorting, filtering, and more.
+5. Add more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+6. Add more features to the search engine like pagination, sorting, filtering, and more.
+7. Add more pages to the UI feel and making sure the search, crawl, indexing, processing, and ranker works perfectly.
+8. Add more features to the search engine like pagination, sorting, filtering, and more.
+Fix issue logo.svg and favicon.ico....

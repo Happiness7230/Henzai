@@ -8,6 +8,8 @@ import threading
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from collections import defaultdict, Counter
+from datetime import datetime
+
 
 
 class AnalyticsStore:
@@ -331,3 +333,41 @@ class AnalyticsStore:
                 'recent_searches': self.get_recent_searches(20),
                 'trends': self.get_search_trends(7)
             }
+    def track_search(self, query: str, results_count: int, response_time: float, mode: str):
+        """
+        Record analytics for a search query
+
+        Args:
+        query: The search term used.
+        results_count: Number of results returned.
+        search_time: Time taken to perform the search (seconds).
+        """
+        timestamp = datetime.now().isoformat()
+
+        with self.lock:
+        # Track counts
+            self.total_searches += 1
+            self.query_counts[query] += 1
+
+            # Track timestamps
+            self.query_timestamps[query].append(timestamp)
+
+            # Record recent search
+            self.recent_queries.append({
+            "query": query,
+            "timestamp": timestamp,
+            "results_count": results_count,
+            "response_time": response_time
+            })
+          # Keep list from growing too large
+            if len(self.recent_queries) > 200:
+                self.recent_queries.pop(0)
+
+            # Track failed searches
+            if results_count == 0:
+                self.failed_searches += 1
+
+            # Track performance
+            self.search_times.append(response_time)
+
+            # Persist data

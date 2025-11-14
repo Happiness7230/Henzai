@@ -69,10 +69,13 @@ class MetricsCollector:
                 self.error_count += 1
                 self.errors_by_type[f"HTTP_{status_code}"] += 1
     
-    def record_search(self,
-                     duration_seconds: float,
-                     result_count: int,
-                     cache_hit: bool = False):
+    def record_search(self, 
+                  duration_seconds: float = None,
+                  result_count: int = None,
+                  cache_hit: bool = False,
+                  query_length: int = None,
+                  **kwargs):
+
         """
         Record a search operation
         
@@ -88,7 +91,7 @@ class MetricsCollector:
             if result_count == 0:
                 self.zero_result_searches += 1
     
-    def record_error(self, error_type: str):
+    def record_error(self, error_type: str = None):
         """
         Record an error
         
