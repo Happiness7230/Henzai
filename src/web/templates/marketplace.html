@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}{{ query }} - Marketplace Search{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="marketplace-page">
+    <!-- Header -->
+    <header class="marketplace-header">
+        <div class="header-left">
+            <a href="/" class="logo-link">
+                <svg class="logo-small" viewBox="0 0 100 40">
+                    <text x="5" y="28" font-size="24" font-weight="700" fill="#4285f4">Search</text>
+                </svg>
+            </a>
+            
+            <form id="marketplaceSearchForm" class="header-search-form">
+                <div class="header-search-box">
+                    <i class="fas fa-shopping-cart"></i>
+                    <input type="text" id="searchInput" class="header-search-input" 
+                           value="{{ query }}" placeholder="Search products..." autocomplete="off">
+                    <button type="submit" class="search-submit-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="header-right">
+            <button class="icon-btn" id="compareBtn" title="Compare Products">
+                <i class="fas fa-balance-scale"></i>
+                <span class="badge" id="compareCount">0</span>
+            </button>
+            <button class="icon-btn" id="alertsBtn" title="My Alerts">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="icon-btn" id="darkModeBtn">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+        <div class="marketplace-tabs">
+            <button class="marketplace-tab active" data-marketplace="all">
+                <i class="fas fa-globe"></i>
+                All Stores
+            </button>
+            <button class="marketplace-tab" data-marketplace="amazon">
+                <i class="fab fa-amazon"></i>
+                Amazon
+            </button>
+            <button class="marketplace-tab" data-marketplace="ebay">
+                <i class="fas fa-gavel"></i>
+                eBay
+            </button>
+            <button class="marketplace-tab" data-marketplace="walmart">
+                <i class="fas fa-store"></i>
+                Walmart
+            </button>
+        </div>
+        
+        <div class="filter-controls">
+            <select id="sortBy" class="filter-select">
+                <option value="relevance">Best Match</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+            </select>
+            
+            <button class="btn-filter" id="priceFilterBtn">
+                <i class="fas fa-filter"></i>
+                Price Range
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="marketplace-main">
+        <div class="results-info" id="resultsInfo">
+            <span>Loading...</span>
+        </div>
+        
+        <!-- Products Grid -->
+        <div id="productsGrid" class="products-grid">
+            <!-- Loading skeleton -->
+            <div class="skeleton-loader">
+                <div class="product-skeleton"></div>
+                <div class="product-skeleton"></div>
+                <div class="product-skeleton"></div>
+                <div class="product-skeleton"></div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Price Filter Modal -->
+    <div id="priceFilterModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Price Range</h2>
+                <button class="close-btn" id="closePriceFilter">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="price-range">
+                    <div class="price-input">
+                        <label>Min Price</label>
+                        <input type="number" id="minPrice" placeholder="0" min="0">
+                    </div>
+                    <div class="price-input">
+                        <label>Max Price</label>
+                        <input type="number" id="maxPrice" placeholder="10000" min="0">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="applyPriceFilter">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Price Alert Modal -->
+    <div id="priceAlertModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔔 Set Price Alert</h2>
+                <button class="close-btn" id="closeAlertModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="alertProductInfo" class="alert-product-info"></div>
+                
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" id="alertEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Price</label>
+                    <div class="price-input-group">
+                        <span class="currency">$</span>
+                        <input type="number" id="targetPrice" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                    <small id="currentPriceText">Current price: $0.00</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="includeShipping" checked>
+                        Include shipping cost in price
+                    </label>
+                </div>
+                
+                <button class="btn btn-primary" id="createAlertBtn">
+                    <i class="fas fa-bell"></i>
+                    Create Alert
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comparison Panel (Sidebar) -->
+    <div id="comparisonPanel" class="comparison-panel hidden">
+        <div class="panel-header">
+            <h3>Compare Products (<span id="compareCountText">0</span>)</h3>
+            <button class="close-btn" id="closeComparePanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body" id="compareItems"></div>
+        <div class="panel-footer">
+            <button class="btn btn-primary" id="viewComparisonBtn" disabled>
+                <i class="fas fa-balance-scale"></i>
+                Compare Now
+            </button>
+            <button class="btn btn-secondary" id="clearCompareBtn">
+                Clear All
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+{% endblock %}

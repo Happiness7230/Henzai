@@ -14,6 +14,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from src.config.config import Config
 from src.external.serpapi_client import SerpAPIClient, SerpAPIException
 from src.search.search_manager import SearchManager
+from dataclasses import asdict
+from src.external.google_search_client import GoogleSearchClient
+from src.marketplace.marketplace_client import MarketplaceClient
+from src.marketplace.price_alerts import PriceAlertManager
+from src.jobs.job_search_client import JobSearchClient, JobAlertManager
+
+from src.search.search_manager import SearchManager
+from src.external.google_search_client import GoogleSearchClient
+
+google_client = GoogleSearchClient()
+search_manager = SearchManager(google_client=GoogleSearchClient())
 
 # Import existing components (assuming they exist)
 try:
@@ -147,9 +158,85 @@ def initialize_components():
     
     logger.info("Application initialization complete!")
 
+# existing global services
+db = None
+search_engine = None
+metrics = None
+
+# ADD these after existing global variables ⬇
+search_manager = None
+google_client = None
+marketplace_client = None
+price_alert_manager = None
+job_search_client = None
+job_alert_manager = None
 
 # Initialize on startup
-initialize_components()
+
+def initialize_components():
+    """Initialize all application components"""
+    global cache_manager, local_ranker, serpapi_client, search_manager
+    global analytics_store, metrics_collector, spider
+    global google_client, marketplace_client, price_alert_manager  # ADD THIS LINE
+    global job_search_client, job_alert_manager  # ADD THIS LINE
+    
+    logger.info("Initializing application components...")
+    
+    initialize_components()
+    
+    # ADD THESE NEW SECTIONS:
+    
+    # Initialize Google Search client
+    if Config.GOOGLE_ENABLED:
+        try:
+            google_client = GoogleSearchClient()
+            if google_client.health_check():
+                logger.info("✓ Google Search client initialized and connected")
+            else:
+                logger.warning("Google Search health check failed")
+                google_client = None
+        except Exception as e:
+            logger.error(f"Google Search initialization failed: {e}")
+            google_client = None
+    
+    # Initialize Marketplace client
+    try:
+        marketplace_client = MarketplaceClient()
+        logger.info("✓ Marketplace client initialized")
+    except Exception as e:
+        logger.warning(f"Marketplace initialization failed: {e}")
+    
+    # Initialize Price Alert Manager
+    try:
+        price_alert_manager = PriceAlertManager()
+        logger.info("✓ Price alert manager initialized")
+    except Exception as e:
+        logger.warning(f"Price alert manager initialization failed: {e}")
+    
+    # Initialize Job Search client
+    try:
+        job_search_client = JobSearchClient()
+        logger.info("✓ Job search client initialized")
+    except Exception as e:
+        logger.warning(f"Job search initialization failed: {e}")
+    
+    # Initialize Job Alert Manager
+    try:
+        job_alert_manager = JobAlertManager()
+        logger.info("✓ Job alert manager initialized")
+    except Exception as e:
+        logger.warning(f"Job alert manager initialization failed: {e}")
+    
+    # UPDATE Search Manager initialization to include google_client:
+    search_manager = SearchManager(
+        local_ranker=local_ranker,
+        serpapi_client=serpapi_client,
+        google_client=google_client,  # ADD THIS LINE
+        cache_manager=cache_manager,
+        mode=Config.SEARCH_MODE
+    )
+    logger.info(f"✓ Search manager initialized in '{Config.SEARCH_MODE}' mode")
+    
 
 
 # ============================================================================
@@ -741,3 +828,339 @@ if __name__ == '__main__':
         port=Config.FLASK_PORT,
         debug=Config.FLASK_DEBUG
     )
+# Initialize job search components
+job_search_client = None
+job_alert_manager = None
+
+def initialize_job_components():
+    global job_search_client, job_alert_manager
+    
+    from src.jobs.job_search_client import JobSearchClient, JobAlertManager
+    
+    try:
+        job_search_client = JobSearchClient()
+        logger.info("✓ Job search client initialized")
+    except Exception as e:
+        logger.warning(f"Job search initialization failed: {e}")
+    
+    try:
+        job_alert_manager = JobAlertManager()
+        logger.info("✓ Job alert manager initialized")
+    except Exception as e:
+        logger.warning(f"Job alert manager initialization failed: {e}")
+
+# Call in initialize_components()
+initialize_job_components()
+
+# === JOB SEARCH ENDPOINTS ===
+
+@app.route('/api/jobs/search', methods=['GET', 'POST'])
+def api_job_search():
+    """Search for jobs"""
+    try:
+        if not job_search_client:
+            return jsonify({
+                'status': 'error',
+                'error': 'Job search not available'
+            }), 503
+        
+        if request.method == 'POST':
+            data = request.get_json() or {}
+        else:
+            data = request.args.to_dict()
+        
+        query = data.get('q', '').strip()
+        if not query:
+            return jsonify({
+                'status': 'error',
+                'error': 'Query parameter "q" is required'
+            }), 400
+        
+        results = job_search_client.search_jobs(
+            query=query,
+            location=data.get('location', ''),
+            max_results=int(data.get('max_results', 20)),
+            remote_only=data.get('remote_only', 'false').lower() == 'true',
+            min_salary=int(data['min_salary']) if data.get('min_salary') else None,
+            experience_level=data.get('experience_level'),
+            job_type=data.get('job_type'),
+            sources=data.get('sources', '').split(',') if data.get('sources') else None
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'data': results
+        })
+    
+    except Exception as e:
+        logger.error(f"Job search error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/jobs/alerts', methods=['GET', 'POST'])
+def api_job_alerts():
+    """Get or create job alerts"""
+    try:
+        if not job_alert_manager:
+            return jsonify({
+                'status': 'error',
+                'error': 'Job alerts not available'
+            }), 503
+        
+        if request.method == 'GET':
+            email = request.args.get('email')
+            if not email:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Email parameter is required'
+                }), 400
+            
+            alerts = job_alert_manager.get_user_alerts(email)
+            return jsonify({
+                'status': 'success',
+                'data': alerts
+            })
+        
+        else:  # POST
+            data = request.get_json() or {}
+            required = ['email', 'keywords', 'location']
+            
+            for field in required:
+                if field not in data:
+                    return jsonify({
+                        'status': 'error',
+                        'error': f'Missing required field: {field}'
+                    }), 400
+            
+            alert_id = job_alert_manager.create_alert(
+                user_email=data['email'],
+                keywords=data['keywords'],
+                location=data['location'],
+                remote_only=data.get('remote_only', False),
+                min_salary=int(data['min_salary']) if data.get('min_salary') else None
+            )
+            
+            return jsonify({
+                'status': 'success',
+                'alert_id': alert_id,
+                'message': 'Job alert created successfully'
+            })
+    
+    except Exception as e:
+        logger.error(f"Job alert error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+    
+# === MARKETPLACE ENDPOINTS ===
+
+@app.route('/marketplace')
+def marketplace_page():
+    """Render marketplace search page"""
+    query = request.args.get('q', '')
+    return render_template('marketplace.html', query=query)
+
+
+@app.route('/api/marketplace/search', methods=['GET', 'POST'])
+def api_marketplace_search():
+    """Search across multiple marketplaces"""
+    try:
+        if not marketplace_client:
+            return jsonify({
+                'status': 'error',
+                'error': 'Marketplace search not available'
+            }), 503
+        
+        if request.method == 'POST':
+            data = request.get_json() or {}
+        else:
+            data = request.args.to_dict()
+        
+        query = data.get('q', '').strip()
+        if not query:
+            return jsonify({
+                'status': 'error',
+                'error': 'Query parameter "q" is required'
+            }), 400
+        
+        max_results = int(data.get('max_results', 10))
+        marketplaces = data.get('marketplaces', '').split(',') if data.get('marketplaces') else None
+        min_price = float(data['min_price']) if data.get('min_price') else None
+        max_price = float(data['max_price']) if data.get('max_price') else None
+        sort_by = data.get('sort_by', 'relevance')
+        
+        results = marketplace_client.search_all(
+            query=query,
+            max_results=max_results,
+            marketplaces=marketplaces,
+            min_price=min_price,
+            max_price=max_price,
+            sort_by=sort_by
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'data': results
+        })
+    
+    except Exception as e:
+        logger.error(f"Marketplace search error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/marketplace/compare', methods=['POST'])
+def api_marketplace_compare():
+    """Compare multiple products"""
+    try:
+        if not marketplace_client:
+            return jsonify({
+                'status': 'error',
+                'error': 'Product comparison not available'
+            }), 503
+        
+        data = request.get_json() or {}
+        product_ids = data.get('product_ids', [])
+        
+        if not product_ids:
+            return jsonify({
+                'status': 'error',
+                'error': 'product_ids array is required'
+            }), 400
+        
+        comparison = marketplace_client.compare_products(product_ids)
+        
+        return jsonify({
+            'status': 'success',
+            'data': comparison
+        })
+    
+    except Exception as e:
+        logger.error(f"Product comparison error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/alerts', methods=['GET', 'POST'])
+def api_price_alerts():
+    """Get or create price alerts"""
+    try:
+        if not price_alert_manager:
+            return jsonify({
+                'status': 'error',
+                'error': 'Price alerts not available'
+            }), 503
+        
+        if request.method == 'GET':
+            email = request.args.get('email')
+            if not email:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Email parameter is required'
+                }), 400
+            
+            alerts = price_alert_manager.get_user_alerts(email)
+            return jsonify({
+                'status': 'success',
+                'data': [asdict(a) for a in alerts]
+            })
+        
+        else:  # POST
+            data = request.get_json() or {}
+            required = ['email', 'product_name', 'product_url', 'marketplace', 'target_price', 'current_price']
+            
+            for field in required:
+                if field not in data:
+                    return jsonify({
+                        'status': 'error',
+                        'error': f'Missing required field: {field}'
+                    }), 400
+            
+            alert_id = price_alert_manager.create_alert(
+                user_email=data['email'],
+                product_name=data['product_name'],
+                product_url=data['product_url'],
+                marketplace=data['marketplace'],
+                target_price=float(data['target_price']),
+                current_price=float(data['current_price'])
+            )
+            
+            return jsonify({
+                'status': 'success',
+                'alert_id': alert_id,
+                'message': 'Price alert created successfully'
+            })
+    
+    except Exception as e:
+        logger.error(f"Price alert error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/alerts/<alert_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_price_alert_detail(alert_id):
+    """Get, update, or delete a specific alert"""
+    try:
+        if not price_alert_manager:
+            return jsonify({
+                'status': 'error',
+                'error': 'Price alerts not available'
+            }), 503
+        
+        if request.method == 'GET':
+            alert = price_alert_manager.get_alert(alert_id)
+            if not alert:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Alert not found'
+                }), 404
+            
+            return jsonify({
+                'status': 'success',
+                'data': asdict(alert)
+            })
+        
+        elif request.method == 'PUT':
+            data = request.get_json() or {}
+            target_price = float(data.get('target_price'))
+            
+            if price_alert_manager.update_alert(alert_id, target_price):
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Alert updated'
+                })
+            else:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Alert not found'
+                }), 404
+        
+        else:  # DELETE
+            if price_alert_manager.delete_alert(alert_id):
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Alert deleted'
+                })
+            else:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Alert not found'
+                }), 404
+    
+    except Exception as e:
+        logger.error(f"Price alert detail error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+

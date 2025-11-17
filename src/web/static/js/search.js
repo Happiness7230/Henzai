@@ -136,3 +136,88 @@ async function loadQuickStats() {
         console.error('Failed to load stats:', error);
     }
 }
+// More search dropdown
+document.getElementById('moreSearchBtn')?.addEventListener('click', () => {
+    document.getElementById('moreSearchMenu').classList.toggle('hidden');
+});
+
+// Dropdown items
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const searchType = item.dataset.searchType;
+        const query = searchInput.value.trim();
+        
+        document.getElementById('moreSearchMenu').classList.add('hidden');
+        
+        switch(searchType) {
+            case 'marketplace':
+                window.location.href = `/marketplace?q=${encodeURIComponent(query)}`;
+                break;
+            case 'jobs':
+                window.location.href = `/jobs?q=${encodeURIComponent(query)}`;
+                break;
+            case 'compare':
+                // Open comparison tool
+                break;
+            case 'alerts':
+                window.location.href = '/alerts';
+                break;
+            case 'lucky':
+                luckyBtn.click();
+                break;
+        }
+    });
+});
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('moreSearchMenu');
+    const btn = document.getElementById('moreSearchBtn');
+    
+    if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+// More search dropdown
+document.getElementById('moreSearchBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('moreSearchMenu').classList.toggle('hidden');
+});
+
+// Dropdown items
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const searchType = item.dataset.searchType;
+        const query = searchInput.value.trim();
+        
+        document.getElementById('moreSearchMenu').classList.add('hidden');
+        
+        switch(searchType) {
+            case 'marketplace':
+                window.location.href = `/marketplace?q=${encodeURIComponent(query)}`;
+                break;
+            case 'jobs':
+                window.location.href = `/jobs?q=${encodeURIComponent(query)}`;
+                break;
+            case 'compare':
+                Utils.showToast('Select products from marketplace search', 'info');
+                break;
+            case 'alerts':
+                window.location.href = '/alerts';
+                break;
+            case 'lucky':
+                document.getElementById('luckyBtn')?.click();
+                break;
+        }
+    });
+});
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('moreSearchMenu');
+    const btn = document.getElementById('moreSearchBtn');
+    
+    if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});

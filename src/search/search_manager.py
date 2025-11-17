@@ -416,3 +416,75 @@ class SearchManager:
                 'timestamp': datetime.now().isoformat()
             }
         }
+    
+def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
+    """
+    Search with automatic fallback between Google and SerpAPI.
+    """
+    from src.config.config import Config
+    from src.external.google_search_client import GoogleSearchException
+    
+    primary = Config.PRIMARY_SEARCH_ENGINE
+    fallback = Config.FALLBACK_SEARCH_ENGINE
+    
+    # Try primary engine
+    try:
+        if primary == 'google' and self.google_client:
+            logger.info("Using Google as primary search engine")
+            return self._search_google(query, **kwargs)
+        elif primary == 'serpapi' and self.serpapi_client:
+            logger.info("Using SerpAPI as primary search engine")
+            return self._search_api(query, **kwargs)
+    except (GoogleSearchException, Exception) as e:
+        logger.warning(f"Primary search engine ({primary}) failed: {str(e)}")
+        logger.info(f"Falling back to {fallback}")
+        
+        # Try fallback
+        try:
+            if fallback == 'google' and self.google_client:
+                return self._search_google(query, **kwargs)
+            elif fallback == 'serpapi' and self.serpapi_client:
+                return self._search_api(query, **kwargs)
+        except Exception as e2:
+            logger.error(f"Fallback search engine ({fallback}) also failed: {str(e2)}")
+            if self.local_ranker:
+                return self._search_local(query, kwargs.get('max_results', 10), None)
+    
+    return self._empty_results(query, "All search engines failed")
+
+def _search_google(self, query: str, **kwargs) -> Dict[str, Any]:
+    """Search using Google Custom Search API"""
+    if not self.google_client:
+        raise ValueError("Google client not configured")
+    
+    results = self.google_client.search(
+        query=query,
+        max_results=kwargs.get('max_results', 10),
+        safe_search=kwargs.get('safe_search', True),
+        date_restrict=self._convert_time_period(kwargs.get('time_period')),
+        site_search=kwargs.get('site_search'),
+        file_type=kwargs.get('file_type')
+    )
+    
+    return {
+        'query': query,
+        'results': results.get('organic_results', []),
+        'total': len(results.get('organic_results', [])),
+        'answer_box': results.get('answer_box'),
+        'knowledge_graph': results.get('knowledge_graph'),
+        'related_searches': results.get('related_searches', []),
+        'metadata': results.get('metadata', {})
+    }
+
+@staticmethod
+def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
+    """Convert time period to Google format"""
+    if not time_period:
+        return None
+    mapping = {
+        'd': 'd1',
+        'w': 'w1',
+        'm': 'm1',
+        'y': 'y1'
+    }
+    return mapping.get(time_period)

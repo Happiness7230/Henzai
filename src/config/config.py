@@ -167,3 +167,29 @@ class Config:
 # Validate configuration on import
 if not Config.validate():
     print("Warning: Configuration validation failed. Please check your .env file.")
+    
+    # Google Search API
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
+    GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID', '')
+    GOOGLE_ENABLED = os.getenv('GOOGLE_ENABLED', 'false').lower() == 'true'
+    
+    # Marketplace APIs
+    AMAZON_ACCESS_KEY = os.getenv('AMAZON_ACCESS_KEY', '')
+    AMAZON_SECRET_KEY = os.getenv('AMAZON_SECRET_KEY', '')
+    AMAZON_PARTNER_TAG = os.getenv('AMAZON_PARTNER_TAG', '')
+    EBAY_APP_ID = os.getenv('EBAY_APP_ID', '')
+    RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY', '')
+    
+    # Email Configuration
+    SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
+    SMTP_USER = os.getenv('SMTP_USER', '')
+    SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+    
+    # Search Engine Configuration
+    PRIMARY_SEARCH_ENGINE = os.getenv('PRIMARY_SEARCH_ENGINE', 'google')
+    FALLBACK_SEARCH_ENGINE = os.getenv('FALLBACK_SEARCH_ENGINE', 'serpapi')
+    
+    # Celery
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+    CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
