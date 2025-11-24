@@ -341,3 +341,10 @@ if __name__ == "__main__":
     print("  - search-engine.log (all logs)")
     print("  - error.log (errors only)")
     print("  - performance.log (performance metrics)")
+
+# Create global logger instance on import
+logger = setup_logging(
+    log_level='INFO',
+    console_output=True,
+    json_format=False
+)

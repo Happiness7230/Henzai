@@ -2,15 +2,15 @@
   "pypi": [
     [
       "https://pypi.org",
-      260
+      377
     ],
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "the": [
@@ -30,15 +30,15 @@
   "python": [
     [
       "https://pypi.org",
-      240
+      348
     ],
     [
       "https://docs.python.org/3/",
-      1100
+      1595
     ],
     [
       "https://python.org",
-      1194
+      1751
     ]
   ],
   "package": [
@@ -50,25 +50,25 @@
   "index": [
     [
       "https://pypi.org",
-      80
+      116
     ],
     [
       "https://docs.python.org/3/",
-      120
+      174
     ],
     [
       "https://python.org",
-      59
+      86
     ]
   ],
   "skip": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "to": [
@@ -88,27 +88,27 @@
   "main": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "content": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "switch": [
     [
       "https://pypi.org",
-      40
+      58
     ]
   ],
   "mobile": [
@@ -120,15 +120,15 @@
   "version": [
     [
       "https://pypi.org",
-      40
+      58
     ],
     [
       "https://docs.python.org/3/",
-      98
+      143
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "warning": [
@@ -160,7 +160,7 @@
   "may": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "not": [
@@ -176,27 +176,27 @@
   "work": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      64
+      91
     ]
   ],
   "without": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "javascript": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "please": [
@@ -270,11 +270,11 @@
   "help": [
     [
       "https://pypi.org",
-      79
+      115
     ],
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "docs": [
@@ -300,7 +300,7 @@
   "log": [
     [
       "https://pypi.org",
-      59
+      86
     ]
   ],
   "in": [
@@ -326,21 +326,21 @@
   "menu": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "find": [
     [
       "https://pypi.org",
-      40
+      58
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "install": [
@@ -370,11 +370,11 @@
   "publish": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "packages": [
@@ -400,15 +400,15 @@
   "search": [
     [
       "https://pypi.org",
-      40
+      58
     ],
     [
       "https://docs.python.org/3/",
-      60
+      87
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "or": [
@@ -488,11 +488,11 @@
     ],
     [
       "https://docs.python.org/3/",
-      42
+      60
     ],
     [
       "https://python.org",
-      24
+      32
     ]
   ],
   "950": [
@@ -680,11 +680,11 @@
   "learn": [
     [
       "https://pypi.org",
-      40
+      58
     ],
     [
       "https://python.org",
-      110
+      157
     ]
   ],
   "about": [
@@ -720,15 +720,15 @@
   "use": [
     [
       "https://pypi.org",
-      59
+      86
     ],
     [
       "https://docs.python.org/3/",
-      59
+      86
     ],
     [
       "https://python.org",
-      72
+      106
     ]
   ],
   "distribute": [
@@ -766,15 +766,15 @@
   "code": [
     [
       "https://pypi.org",
-      40
+      58
     ],
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      101
+      146
     ]
   ],
   "uploading": [
@@ -786,11 +786,11 @@
   "user": [
     [
       "https://pypi.org",
-      39
+      57
     ],
     [
       "https://python.org",
-      96
+      140
     ]
   ],
   "guide": [
@@ -810,11 +810,11 @@
   "project": [
     [
       "https://pypi.org",
-      58
+      85
     ],
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
@@ -824,11 +824,11 @@
   "name": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      80
+      116
     ]
   ],
   "retention": [
@@ -850,7 +850,7 @@
   "blog": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "infrastructure": [
@@ -866,7 +866,7 @@
   "dashboard": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "statistics": [
@@ -920,7 +920,7 @@
   "feedback": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "contribute": [
@@ -946,7 +946,7 @@
   "github": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "translate": [
@@ -958,7 +958,7 @@
   "sponsor": [
     [
       "https://pypi.org",
-      97
+      142
     ]
   ],
   "development": [
@@ -1010,15 +1010,15 @@
   "report": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      60
+      87
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "security": [
@@ -1048,11 +1048,11 @@
   "conduct": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "privacy": [
@@ -1150,7 +1150,7 @@
   "today": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "blocks": [
@@ -1196,47 +1196,47 @@
   "2025": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      271
+      355
     ]
   ],
   "site": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      23
+      39
     ]
   ],
   "map": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "desktop": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "english": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "español": [
@@ -1266,7 +1266,7 @@
   "brasil": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "українська": [
@@ -1284,7 +1284,7 @@
   "deutsch": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "中文": [
@@ -1320,7 +1320,7 @@
   "esperanto": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "한국어": [
@@ -1344,7 +1344,7 @@
   "cloud": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "computing": [
@@ -1356,7 +1356,7 @@
   "datadog": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "monitoring": [
@@ -1368,7 +1368,7 @@
   "depot": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "continuous": [
@@ -1392,7 +1392,7 @@
   "cdn": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "google": [
@@ -1404,15 +1404,15 @@
   "download": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://docs.python.org/3/",
-      100
+      145
     ],
     [
       "https://python.org",
-      78
+      114
     ]
   ],
   "analytics": [
@@ -1424,7 +1424,7 @@
   "pingdom": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "sentry": [
@@ -1436,7 +1436,7 @@
   "error": [
     [
       "https://pypi.org",
-      20
+      29
     ]
   ],
   "logging": [
@@ -1454,11 +1454,11 @@
   "page": [
     [
       "https://pypi.org",
-      20
+      29
     ],
     [
       "https://docs.python.org/3/",
-      40
+      58
     ]
   ],
   "3": [
@@ -1474,11 +1474,11 @@
   "14": [
     [
       "https://docs.python.org/3/",
-      164
+      237
     ],
     [
       "https://python.org",
-      35
+      53
     ]
   ],
   "0": [
@@ -1504,25 +1504,25 @@
   "theme": [
     [
       "https://docs.python.org/3/",
-      60
+      87
     ]
   ],
   "auto": [
     [
       "https://docs.python.org/3/",
-      60
+      87
     ]
   ],
   "light": [
     [
       "https://docs.python.org/3/",
-      60
+      87
     ]
   ],
   "dark": [
     [
       "https://docs.python.org/3/",
-      60
+      87
     ]
   ],
   "these": [
@@ -1546,21 +1546,21 @@
   "13": [
     [
       "https://docs.python.org/3/",
-      44
+      62
     ],
     [
       "https://python.org",
-      28
+      37
     ]
   ],
   "12": [
     [
       "https://docs.python.org/3/",
-      42
+      60
     ],
     [
       "https://python.org",
-      12
+      21
     ]
   ],
   "fixes": [
@@ -1572,21 +1572,21 @@
   "11": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      123
+      169
     ]
   ],
   "10": [
     [
       "https://docs.python.org/3/",
-      41
+      59
     ],
     [
       "https://python.org",
-      72
+      91
     ]
   ],
   "9": [
@@ -1608,7 +1608,7 @@
   "eol": [
     [
       "https://docs.python.org/3/",
-      478
+      694
     ]
   ],
   "6": [
@@ -1690,11 +1690,11 @@
   "pep": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "beginner": [
@@ -1720,41 +1720,41 @@
   "book": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "list": [
     [
       "https://docs.python.org/3/",
-      59
+      86
     ],
     [
       "https://python.org",
-      214
+      313
     ]
   ],
   "audio": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "visual": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "talks": [
@@ -1830,11 +1830,11 @@
   "new": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      40
+      50
     ]
   ],
   "since": [
@@ -1852,11 +1852,11 @@
   "start": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      77
+      113
     ]
   ],
   "here": [
@@ -1868,17 +1868,17 @@
   "tour": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "syntax": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "library": [
@@ -1900,11 +1900,11 @@
   "standard": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      25
+      35
     ]
   ],
   "builtins": [
@@ -1922,7 +1922,7 @@
   "setup": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "usage": [
@@ -1946,13 +1946,13 @@
   "depth": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "topic": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "manuals": [
@@ -1964,7 +1964,7 @@
   "third": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "party": [
@@ -1976,11 +1976,11 @@
   "org": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "distributing": [
@@ -2032,7 +2032,7 @@
   "api": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ]
   ],
   "frequently": [
@@ -2092,7 +2092,7 @@
   "global": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "module": [
@@ -2214,11 +2214,11 @@
   "copyright": [
     [
       "https://docs.python.org/3/",
-      40
+      58
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "â": [
@@ -2230,11 +2230,11 @@
   "2001": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "licensed": [
@@ -2270,7 +2270,7 @@
   "zero": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "clause": [
@@ -2282,13 +2282,13 @@
   "bsd": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "see": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "more": [
@@ -2304,17 +2304,17 @@
   "non": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "profit": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "corporation": [
@@ -2326,7 +2326,7 @@
   "last": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "updated": [
@@ -2348,7 +2348,7 @@
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "22": [
@@ -2358,7 +2358,7 @@
     ],
     [
       "https://python.org",
-      1
+      9
     ]
   ],
   "26": [
@@ -2370,27 +2370,27 @@
   "utc": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "found": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "bug": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ],
     [
       "https://python.org",
-      20
+      29
     ],
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "created": [
@@ -2402,7 +2402,7 @@
   "sphinx": [
     [
       "https://docs.python.org/3/",
-      20
+      29
     ]
   ],
   "while": [
@@ -2450,13 +2450,13 @@
   "turn": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "full": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "experience": [
@@ -2468,13 +2468,13 @@
   "close": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "psf": [
     [
       "https://python.org",
-      239
+      331
     ]
   ],
   "jobs": [
@@ -2486,31 +2486,31 @@
   "network": [
     [
       "https://python.org",
-      20
+      30
     ]
   ],
   "go": [
     [
       "https://python.org",
-      41
+      59
     ]
   ],
   "smaller": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "larger": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "reset": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "socialize": [
@@ -2522,31 +2522,31 @@
   "linkedin": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "mastodon": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "chat": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "irc": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "twitter": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "applications": [
@@ -2606,7 +2606,7 @@
   "android": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "platforms": [
@@ -2636,15 +2636,15 @@
   "faq": [
     [
       "https://python.org",
-      40
+      58
     ],
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "books": [
@@ -2680,13 +2680,13 @@
   "annual": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "impact": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "conferences": [
@@ -2698,13 +2698,13 @@
   "special": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "interest": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "groups": [
@@ -2716,17 +2716,17 @@
   "logo": [
     [
       "https://python.org",
-      40
+      58
     ],
     [
       "https://pypi.org",
-      38
+      56
     ]
   ],
   "wiki": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "awards": [
@@ -2738,7 +2738,7 @@
   "get": [
     [
       "https://python.org",
-      98
+      143
     ]
   ],
   "involved": [
@@ -2756,7 +2756,7 @@
   "success": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "arts": [
@@ -2798,7 +2798,7 @@
   "news": [
     [
       "https://python.org",
-      220
+      319
     ]
   ],
   "newsletter": [
@@ -2810,13 +2810,13 @@
   "pycon": [
     [
       "https://python.org",
-      70
+      96
     ]
   ],
   "us": [
     [
       "https://python.org",
-      48
+      66
     ]
   ],
   "from": [
@@ -2834,7 +2834,7 @@
   "group": [
     [
       "https://python.org",
-      145
+      216
     ]
   ],
   "archive": [
@@ -2846,7 +2846,7 @@
   "submit": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "an": [
@@ -2858,7 +2858,7 @@
   "event": [
     [
       "https://python.org",
-      249
+      366
     ]
   ],
   "_": [
@@ -2870,7 +2870,7 @@
   "launch": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "interactive": [
@@ -2882,13 +2882,13 @@
   "shell": [
     [
       "https://python.org",
-      20
+      30
     ]
   ],
   "fibonacci": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "series": [
@@ -2912,13 +2912,13 @@
   "def": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "fib": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "b": [
@@ -2930,25 +2930,25 @@
   "print": [
     [
       "https://python.org",
-      120
+      174
     ]
   ],
   "end": [
     [
       "https://python.org",
-      32
+      50
     ]
   ],
   "1000": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "21": [
     [
       "https://python.org",
-      25
+      43
     ],
     [
       "https://docs.python.org/3/",
@@ -2958,49 +2958,49 @@
   "34": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "55": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "89": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "144": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "233": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "377": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "610": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "987": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "defined": [
@@ -3012,7 +3012,7 @@
   "core": [
     [
       "https://python.org",
-      41
+      59
     ]
   ],
   "extensible": [
@@ -3054,13 +3054,13 @@
   "keyword": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "even": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "arbitrary": [
@@ -3072,7 +3072,7 @@
   "argument": [
     [
       "https://python.org",
-      58
+      85
     ]
   ],
   "comprehensions": [
@@ -3090,7 +3090,7 @@
   "banana": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "apple": [
@@ -3102,7 +3102,7 @@
   "lime": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "loud_fruits": [
@@ -3114,13 +3114,13 @@
   "fruit": [
     [
       "https://python.org",
-      97
+      142
     ]
   ],
   "upper": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "enumerate": [
@@ -3132,23 +3132,23 @@
   "function": [
     [
       "https://python.org",
-      115
+      169
     ],
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "compound": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "data": [
     [
       "https://python.org",
-      59
+      77
     ]
   ],
   "types": [
@@ -3160,7 +3160,7 @@
   "known": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "as": [
@@ -3184,7 +3184,7 @@
   "one": [
     [
       "https://python.org",
-      21
+      30
     ]
   ],
   "that": [
@@ -3226,7 +3226,7 @@
   "built": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "simple": [
@@ -3244,17 +3244,17 @@
   "17": [
     [
       "https://python.org",
-      40
+      58
     ],
     [
       "https://docs.python.org/3/",
-      3
+      4
     ]
   ],
   "classic": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "division": [
@@ -3272,19 +3272,19 @@
   "float": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "666666666666667": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "floor": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "intuitive": [
@@ -3314,7 +3314,7 @@
   "straightforward": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "operators": [
@@ -3350,13 +3350,13 @@
   "math": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "loop": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "numbers": [
@@ -3368,25 +3368,25 @@
   "product": [
     [
       "https://python.org",
-      124
+      178
     ]
   ],
   "number": [
     [
       "https://python.org",
-      78
+      114
     ]
   ],
   "384": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "flow": [
     [
       "https://python.org",
-      60
+      87
     ]
   ],
   "d": [
@@ -3398,7 +3398,7 @@
   "expect": [
     [
       "https://python.org",
-      39
+      57
     ]
   ],
   "knows": [
@@ -3410,13 +3410,13 @@
   "usual": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "control": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "statements": [
@@ -3428,7 +3428,7 @@
   "speak": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "range": [
@@ -3470,7 +3470,7 @@
   "output": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "unicode": [
@@ -3482,7 +3482,7 @@
   "hello": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "i": [
@@ -3500,7 +3500,7 @@
   "input": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "assignment": [
@@ -3518,13 +3518,13 @@
   "hi": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "quick": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "easy": [
@@ -3548,7 +3548,7 @@
   "pick": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "very": [
@@ -3572,7 +3572,7 @@
   "clean": [
     [
       "https://python.org",
-      21
+      30
     ]
   ],
   "indentation": [
@@ -3590,7 +3590,7 @@
   "whet": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "appetite": [
@@ -3602,7 +3602,7 @@
   "overview": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "lets": [
@@ -3626,7 +3626,7 @@
   "whether": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "re": [
@@ -3650,13 +3650,13 @@
   "latest": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "along": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "tutorials": [
@@ -3710,7 +3710,7 @@
   "hire": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "relaunched": [
@@ -3722,37 +3722,37 @@
   "run": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "job": [
     [
       "https://python.org",
-      77
+      113
     ]
   ],
   "board": [
     [
       "https://python.org",
-      60
+      71
     ]
   ],
   "place": [
     [
       "https://python.org",
-      24
+      33
     ]
   ],
   "open": [
     [
       "https://python.org",
-      26
+      37
     ]
   ],
   "free": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "sustainability": [
@@ -3764,7 +3764,7 @@
   "28": [
     [
       "https://python.org",
-      20
+      21
     ]
   ],
   "another": [
@@ -3776,7 +3776,7 @@
   "year": [
     [
       "https://python.org",
-      32
+      42
     ]
   ],
   "office": [
@@ -3788,7 +3788,7 @@
   "hour": [
     [
       "https://python.org",
-      20
+      21
     ]
   ],
   "sessions": [
@@ -3836,11 +3836,11 @@
   "program": [
     [
       "https://python.org",
-      84
+      120
     ],
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "announcing": [
@@ -3870,7 +3870,11 @@
   "20": [
     [
       "https://python.org",
-      1
+      9
+    ],
+    [
+      "https://docs.python.org/3/",
+      8
     ]
   ],
   "cpython": [
@@ -3882,7 +3886,7 @@
   "dev": [
     [
       "https://python.org",
-      21
+      30
     ]
   ],
   "sprint": [
@@ -3930,7 +3934,7 @@
   "30": [
     [
       "https://python.org",
-      21
+      30
     ]
   ],
   "fr": [
@@ -3964,7 +3968,7 @@
   "django": [
     [
       "https://python.org",
-      28
+      37
     ]
   ],
   "birthday": [
@@ -3976,7 +3980,7 @@
   "01": [
     [
       "https://python.org",
-      6
+      23
     ]
   ],
   "girls": [
@@ -4036,15 +4040,15 @@
   "develop": [
     [
       "https://python.org",
-      179
+      261
     ],
     [
       "https://pypi.org",
-      57
+      84
     ],
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "customized": [
@@ -4080,7 +4084,7 @@
   "complex": [
     [
       "https://python.org",
-      10
+      11
     ]
   ],
   "challenges": [
@@ -4104,7 +4108,7 @@
   "time": [
     [
       "https://python.org",
-      5
+      12
     ]
   ],
   "union": [
@@ -4152,13 +4156,13 @@
   "web": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "pyramid": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "bottle": [
@@ -4170,13 +4174,13 @@
   "tornado": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "flask": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "web2py": [
@@ -4188,25 +4192,25 @@
   "gui": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "tkinter": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "pygobject": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "pyqt": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "pyside": [
@@ -4224,13 +4228,13 @@
   "wxpython": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "dearpygui": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "numeric": [
@@ -4254,35 +4258,35 @@
   "ipython": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "buildbot": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "trac": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "roundup": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "system": [
     [
       "https://python.org",
-      39
+      57
     ],
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "administration": [
@@ -4300,25 +4304,25 @@
   "salt": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "openstack": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "xonsh": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "mission": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "promote": [
@@ -4330,7 +4334,7 @@
   "protect": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "advance": [
@@ -4342,11 +4346,11 @@
   "support": [
     [
       "https://python.org",
-      20
+      31
     ],
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "facilitate": [
@@ -4358,7 +4362,7 @@
   "growth": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "diverse": [
@@ -4382,37 +4386,37 @@
   "member": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "back": [
     [
       "https://python.org",
-      40
+      58
     ]
   ],
   "top": [
     [
       "https://python.org",
-      44
+      62
     ]
   ],
   "tracker": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "mentorship": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "contact": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "initiatives": [
@@ -4424,81 +4428,85 @@
   "legal": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "packag": [
     [
       "https://pypi.org",
-      190
+      280
     ],
     [
       "https://python.org",
-      19
+      29
     ]
   ],
   "mobil": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "warn": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "featur": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
+    ],
+    [
+      "https://python.org",
+      1
     ]
   ],
   "pleas": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "tri": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "enabl": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "encount": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "problem": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
@@ -4508,41 +4516,41 @@
   "doc": [
     [
       "https://pypi.org",
-      38
+      56
     ],
     [
       "https://docs.python.org/3/",
-      57
+      84
     ],
     [
       "https://python.org",
-      133
+      196
     ]
   ],
   "regist": [
     [
       "https://pypi.org",
-      57
+      84
     ]
   ],
   "instal": [
     [
       "https://pypi.org",
-      76
+      112
     ],
     [
       "https://docs.python.org/3/",
-      38
+      56
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "brows": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "696": [
@@ -4572,17 +4580,17 @@
   "releas": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "16": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
@@ -4604,7 +4612,7 @@
   "file": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "974": [
@@ -4622,247 +4630,247 @@
   "repositori": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "softwar": [
     [
       "https://pypi.org",
-      95
+      140
     ],
     [
       "https://docs.python.org/3/",
-      57
+      84
     ],
     [
       "https://python.org",
-      133
+      196
     ]
   ],
   "languag": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      38
+      56
     ],
     [
       "https://python.org",
-      95
+      140
     ]
   ],
   "share": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "commun": [
     [
       "https://pypi.org",
-      57
+      84
     ],
     [
       "https://python.org",
-      171
+      252
     ]
   ],
   "author": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "distribut": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "upload": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "guid": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      76
+      112
     ],
     [
       "https://python.org",
-      133
+      196
     ]
   ],
   "retent": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "infrastructur": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "statist": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "trademark": [
     [
       "https://pypi.org",
-      38
+      56
     ]
   ],
   "contribut": [
     [
       "https://pypi.org",
-      38
+      56
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "translat": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "credit": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "term": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "servic": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "secur": [
     [
       "https://pypi.org",
-      38
+      56
     ],
     [
       "https://docs.python.org/3/",
-      114
+      168
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "issu": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "privaci": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "notic": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "accept": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "polici": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "statu": [
     [
       "https://pypi.org",
-      38
+      56
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "oper": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "maintain": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
@@ -4872,293 +4880,293 @@
   "donat": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "block": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "foundat": [
     [
       "https://pypi.org",
-      38
+      56
     ],
     [
       "https://docs.python.org/3/",
-      57
+      84
     ],
     [
       "https://python.org",
-      77
+      113
     ]
   ],
   "espanol": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "francai": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "portugu": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "aw": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "comput": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "monitor": [
     [
       "https://pypi.org",
-      38
+      56
     ]
   ],
   "continu": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "integr": [
     [
       "https://pypi.org",
-      19
+      28
     ],
     [
       "https://python.org",
-      42
+      61
     ]
   ],
   "fastli": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "googl": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "analyt": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "sentri": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "statuspag": [
     [
       "https://pypi.org",
-      19
+      28
     ]
   ],
   "document": [
     [
       "https://docs.python.org/3/",
-      247
+      364
     ],
     [
       "https://python.org",
-      57
+      84
     ]
   ],
   "stabl": [
     [
       "https://docs.python.org/3/",
-      76
+      112
     ]
   ],
   "fix": [
     [
       "https://docs.python.org/3/",
-      114
+      168
     ]
   ],
   "resourc": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ],
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "beginn": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ],
     [
       "https://python.org",
-      76
+      112
     ]
   ],
   "talk": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "developera": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "navig": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "modul": [
     [
       "https://docs.python.org/3/",
-      152
+      224
     ]
   ],
   "welcom": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "offici": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "section": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "sinc": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "tutori": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "librari": [
     [
       "https://docs.python.org/3/",
-      57
+      84
     ],
     [
       "https://python.org",
-      24
+      34
     ]
   ],
   "refer": [
     [
       "https://docs.python.org/3/",
-      57
+      84
     ]
   ],
   "builtin": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "element": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "usag": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "configur": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "howto": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "manual": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "parti": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "peopl": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
@@ -5168,169 +5176,169 @@
   "extend": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "embed": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "programm": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      39
+      57
     ]
   ],
   "frequent": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "ask": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "question": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "answer": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "deprec": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "indic": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "glossari": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "gener": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      27
+      36
     ]
   ],
   "class": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "explain": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "complet": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "tabl": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "subsect": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "inform": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "histori": [
     [
       "https://docs.python.org/3/",
-      38
+      56
     ]
   ],
   "licens": [
     [
       "https://docs.python.org/3/",
-      114
+      168
     ],
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "exampl": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "recip": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "addit": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "claus": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "corpor": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "updat": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "nov": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ]
   ],
   "05": [
@@ -5348,485 +5356,485 @@
   "creat": [
     [
       "https://docs.python.org/3/",
-      19
+      28
     ],
     [
       "https://python.org",
-      9
+      10
     ]
   ],
   "essenti": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "websit": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "interact": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "limit": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "experi": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "social": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "applic": [
     [
       "https://python.org",
-      47
+      67
     ]
   ],
   "quot": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "brochur": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "sourc": [
     [
       "https://python.org",
-      61
+      90
     ]
   ],
   "window": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "maco": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "platform": [
     [
       "https://python.org",
-      38
+      57
     ]
   ],
   "altern": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "implement": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "essay": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "divers": [
     [
       "https://python.org",
-      80
+      116
     ]
   ],
   "mail": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "forum": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "confer": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "award": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "involv": [
     [
       "https://python.org",
-      42
+      61
     ]
   ],
   "stori": [
     [
       "https://python.org",
-      95
+      140
     ]
   ],
   "art": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "busi": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "educ": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "engin": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "govern": [
     [
       "https://python.org",
-      45
+      63
     ]
   ],
   "scientif": [
     [
       "https://python.org",
-      57
+      84
     ]
   ],
   "newslett": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "archiv": [
     [
       "https://python.org",
-      95
+      140
     ]
   ],
   "seri": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "defin": [
     [
       "https://python.org",
-      57
+      84
     ]
   ],
   "extens": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "allow": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "mandatori": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "option": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "arbitrari": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "comprehens": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "appl": [
     [
       "https://python.org",
-      57
+      84
     ]
   ],
   "enumer": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "type": [
     [
       "https://python.org",
-      39
+      57
     ]
   ],
   "array": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "understand": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "slice": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "manipul": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "simpl": [
     [
       "https://python.org",
-      77
+      113
     ]
   ],
   "arithmet": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "divis": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "return": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "intuit": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "interpret": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "calcul": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "express": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "parenthes": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "youd": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "know": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "statement": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "rang": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "twist": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "cours": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "tool": [
     [
       "https://python.org",
-      24
+      34
     ]
   ],
   "unicod": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "assign": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "easi": [
     [
       "https://python.org",
-      57
+      84
     ]
   ],
   "experienc": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "quickli": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "indent": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "structur": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "appetit": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "let": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "effect": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "avail": [
     [
       "https://python.org",
-      38
+      56
     ]
   ],
   "onlin": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "look": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "relat": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "posit": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "relaunch": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "04": [
     [
       "https://python.org",
-      19
+      28
     ],
     [
       "https://docs.python.org/3/",
@@ -5836,61 +5844,61 @@
   "connect": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "dot": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "current": [
     [
       "https://python.org",
-      23
+      32
     ]
   ],
   "financi": [
     [
       "https://python.org",
-      21
+      30
     ]
   ],
   "outlook": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "improv": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "sustain": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "anoth": [
     [
       "https://python.org",
-      19
+      20
     ]
   ],
   "offic": [
     [
       "https://python.org",
-      19
+      20
     ]
   ],
   "session": [
     [
       "https://python.org",
-      19
+      20
     ]
   ],
   "propos": [
@@ -5902,7 +5910,7 @@
   "upcom": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "08": [
@@ -5944,7 +5952,7 @@
   "leiden": [
     [
       "https://python.org",
-      8
+      16
     ]
   ],
   "kino": [
@@ -5980,7 +5988,7 @@
   "test": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "model": [
@@ -6034,7 +6042,7 @@
   "build": [
     [
       "https://python.org",
-      14
+      25
     ]
   ],
   "inabl": [
@@ -6106,7 +6114,7 @@
   "ai": [
     [
       "https://python.org",
-      13
+      22
     ]
   ],
   "alex": [
@@ -6142,91 +6150,91 @@
   "bottl": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "web2pi": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "pysid": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "kivi": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "numer": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "scipi": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "panda": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "administr": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "ansibl": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "promot": [
     [
       "https://python.org",
-      20
+      29
     ]
   ],
   "advanc": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "facilit": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "intern": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "becom": [
     [
       "https://python.org",
-      19
+      28
     ]
   ],
   "initi": [
     [
       "https://python.org",
-      19
+      29
     ]
   ],
   "867": [
@@ -6268,139 +6276,139 @@
   "06": [
     [
       "https://docs.python.org/3/",
-      6
+      22
     ]
   ],
   "simplifi": [
     [
       "https://python.org",
-      8
+      10
     ]
   ],
   "adopt": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "fhe": [
     [
       "https://python.org",
-      12
+      15
     ]
   ],
   "intens": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "technolog": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "stack": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "zama": [
     [
       "https://python.org",
-      8
+      10
     ]
   ],
   "streamlin": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "de": [
     [
       "https://python.org",
-      7
+      15
     ]
   ],
   "facto": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "machin": [
     [
       "https://python.org",
-      10
+      12
     ]
   ],
   "ml": [
     [
       "https://python.org",
-      16
+      18
     ]
   ],
   "obviou": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "choic": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "concret": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "homomorph": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "encrypt": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "andrei": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "stoian": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "benoit": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "chevalli": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "mame": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "870": [
@@ -6478,73 +6486,73 @@
   "autom": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "repetit": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "task": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "leav": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "seo": [
     [
       "https://python.org",
-      6
+      20
     ]
   ],
   "effort": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "script": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "analys": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "broken": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "link": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "marnix": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "munck": [
     [
       "https://python.org",
-      3
+      10
     ]
   ],
   "51": [
@@ -6676,13 +6684,13 @@
   "meet": [
     [
       "https://python.org",
-      13
+      22
     ]
   ],
   "dusseldorf": [
     [
       "https://python.org",
-      13
+      22
     ]
   ],
   "herbst": [
@@ -6694,7 +6702,7 @@
   "power": [
     [
       "https://python.org",
-      4
+      5
     ]
   ],
   "major": [
@@ -6844,31 +6852,31 @@
   "everyon": [
     [
       "https://python.org",
-      12
+      21
     ]
   ],
   "join": [
     [
       "https://python.org",
-      12
+      21
     ]
   ],
   "fundrais": [
     [
       "https://python.org",
-      12
+      21
     ]
   ],
   "membership": [
     [
       "https://python.org",
-      12
+      21
     ]
   ],
   "drive": [
     [
       "https://python.org",
-      13
+      22
     ]
   ],
   "thing": [
@@ -6940,7 +6948,7 @@
   "ecosystem": [
     [
       "https://python.org",
-      1
+      2
     ]
   ],
   "peter": [
@@ -7036,7 +7044,7 @@
   "18": [
     [
       "https://python.org",
-      11
+      12
     ],
     [
       "https://docs.python.org/3/",
@@ -7046,7 +7054,7 @@
   "xtremepython": [
     [
       "https://python.org",
-      11
+      12
     ]
   ],
   "587": [
@@ -7232,7 +7240,7 @@
   "19": [
     [
       "https://python.org",
-      9
+      18
     ],
     [
       "https://docs.python.org/3/",
@@ -7242,19 +7250,19 @@
   "delsu": [
     [
       "https://python.org",
-      9
+      10
     ]
   ],
   "tech": [
     [
       "https://python.org",
-      9
+      10
     ]
   ],
   "invas": [
     [
       "https://python.org",
-      9
+      10
     ]
   ],
   "953": [
@@ -7386,7 +7394,7 @@
   "700": [
     [
       "https://pypi.org",
-      5
+      6
     ]
   ],
   "080": [
@@ -7428,25 +7436,25 @@
   "sul": [
     [
       "https://python.org",
-      5
+      14
     ]
   ],
   "25": [
     [
       "https://python.org",
-      5
+      14
     ]
   ],
   "agent": [
     [
       "https://python.org",
-      5
+      14
     ]
   ],
   "2026": [
     [
       "https://python.org",
-      5
+      38
     ]
   ],
   "573": [
@@ -7560,7 +7568,7 @@
   "978": [
     [
       "https://pypi.org",
-      2
+      3
     ]
   ],
   "679": [
@@ -7570,6 +7578,336 @@
     ]
   ],
   "320": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "933": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "656": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "967": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "155": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "150": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "308": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "59": [
+    [
+      "https://docs.python.org/3/",
+      1
+    ]
+  ],
+  "thank": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "flexibl": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "azur": [
+    [
+      "https://python.org",
+      2
+    ]
+  ],
+  "cli": [
+    [
+      "https://python.org",
+      2
+    ]
+  ],
+  "autocomplet": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "persist": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "credenti": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "jmespath": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "result": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "pars": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "lazi": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "less": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "unit": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "cross": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "dan": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "taylor": [
+    [
+      "https://python.org",
+      1
+    ]
+  ],
+  "702": [
+    [
+      "https://pypi.org",
+      8
+    ]
+  ],
+  "302": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "671": [
+    [
+      "https://pypi.org",
+      8
+    ]
+  ],
+  "487": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "194": [
+    [
+      "https://pypi.org",
+      8
+    ]
+  ],
+  "228": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "979": [
+    [
+      "https://pypi.org",
+      8
+    ]
+  ],
+  "342": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "alpha": [
+    [
+      "https://python.org",
+      8
+    ]
+  ],
+  "02": [
+    [
+      "https://python.org",
+      8
+    ]
+  ],
+  "namibia": [
+    [
+      "https://python.org",
+      8
+    ]
+  ],
+  "305": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "548": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "392": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "343": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "307": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "603": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "567": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "348": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "311": [
+    [
+      "https://pypi.org",
+      4
+    ]
+  ],
+  "620": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "625": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "352": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "631": [
+    [
+      "https://pypi.org",
+      2
+    ]
+  ],
+  "662": [
+    [
+      "https://pypi.org",
+      2
+    ]
+  ],
+  "353": [
+    [
+      "https://pypi.org",
+      2
+    ]
+  ],
+  "673": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "784": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "355": [
+    [
+      "https://pypi.org",
+      2
+    ]
+  ],
+  "316": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "735": [
+    [
+      "https://pypi.org",
+      1
+    ]
+  ],
+  "958": [
     [
       "https://pypi.org",
       1

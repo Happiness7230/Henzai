@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Search • Hybrid Search Engine{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/jobs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="jobs-page">
+    <!-- Header with logo and navigation -->
+    <header class="jobs-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1>Job Search</h1>
+                <p class="tagline">Find your next opportunity across multiple platforms</p>
+            </div>
+            <div class="header-actions">
+                <button id="alertsBtn" class="icon-btn" title="View job alerts">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="alertCount">0</span>
+                </button>
+                <button id="darkModeBtn" class="icon-btn" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="jobs-main">
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="container">
+                <form id="jobSearchForm" class="job-search-form">
+                    <div class="search-group">
+                        <div class="input-group">
+                            <i class="fas fa-briefcase"></i>
+                            <input
+                                type="text"
+                                id="jobTitle"
+                                placeholder="Job title, keywords (e.g., 'Python Developer', 'Data Science')"
+                                aria-label="Job title or keywords"
+                                autofocus
+                            >
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input
+                                type="text"
+                                id="jobLocation"
+                                placeholder="City or country (e.g., 'San Francisco', 'Remote')"
+                                aria-label="Job location"
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+
+                    <!-- Advanced Filters (Collapsible) -->
+                    <details class="filters-panel">
+                        <summary class="filters-toggle">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Advanced Filters</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </summary>
+
+                        <div class="filters-content">
+                            <div class="filter-group">
+                                <label>Job Type</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="jobType" value="full-time"> Full-time</label>
+                                    <label><input type="checkbox" name="jobType" value="part-time"> Part-time</label>
+                                    <label><input type="checkbox" name="jobType" value="contract"> Contract</label>
+                                    <label><input type="checkbox" name="jobType" value="freelance"> Freelance</label>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label>Experience Level</label>
+                                <select id="experienceLevel">
+                                    <option value="">Any level</option>
+                                    <option value="entry">Entry level</option>
+                                    <option value="mid">Mid-level</option>
+                                    <option value="senior">Senior</option>
+                                    <option value="executive">Executive</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label>Work Arrangement</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" id="remoteOnly"> Remote only</label>
+                                    <label><input type="checkbox" id="hybridOk"> Hybrid allowed</label>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label>Salary Range (USD/year)</label>
+                                <div class="salary-range">
+                                    <input type="number" id="minSalary" placeholder="Min" min="0" step="1000">
+                                    <span>—</span>
+                                    <input type="number" id="maxSalary" placeholder="Max" min="0" step="1000">
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label>Date Posted</label>
+                                <select id="datePosted">
+                                    <option value="">Any time</option>
+                                    <option value="1d">Last 24 hours</option>
+                                    <option value="7d">Last 7 days</option>
+                                    <option value="30d">Last 30 days</option>
+                                </select>
+                            </div>
+
+                            <button type="button" id="resetFilters" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-redo"></i> Reset Filters
+                            </button>
+                        </div>
+                    </details>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-header">
+                    <div id="resultsInfo" class="results-info">
+                        Ready to search. Enter keywords and location above.
+                    </div>
+                    <div class="sort-container">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy">
+                            <option value="relevance">Relevance</option>
+                            <option value="date">Most Recent</option>
+                            <option value="salary">Salary (High to Low)</option>
+                            <option value="company">Company A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="jobsGrid" class="jobs-grid">
+                    <!-- Job cards will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="pagination hidden">
+                    <button id="prevPage" class="btn btn-outline btn-sm">← Previous</button>
+                    <span id="pageInfo"></span>
+                    <button id="nextPage" class="btn btn-outline btn-sm">Next →</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="jobs-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About</h4>
+                <p>Search jobs across multiple platforms and get alerts for positions matching your criteria.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#" onclick="return false;">Resume Tips</a></li>
+                    <li><a href="#" onclick="return false;">Interview Guide</a></li>
+                    <li><a href="#" onclick="return false;">Salary Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#" onclick="return false;">Help Center</a></li>
+                    <li><a href="#" onclick="return false;">Contact Us</a></li>
+                    <li><a href="#" onclick="return false;">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Job Details Modal -->
+    <div id="jobModal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-content job-modal-content">
+            <button id="closeJobModal" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="jobModalBody" class="modal-body">
+                <!-- Job details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <a id="jobApplyLink" href="#" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Apply Now
+                </a>
+                <button id="jobSaveBtn" class="btn btn-outline">
+                    <i class="fas fa-bookmark"></i> Save Job
+                </button>
+                <button id="jobAlertBtn" class="btn btn-outline">
+                    <i class="fas fa-bell"></i> Set Alert
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Alert Modal -->
+    <div id="jobAlertModal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Job Alert</h2>
+                <button id="closeAlertModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="alertEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Alert Name</label>
+                    <input type="text" id="alertName" placeholder="e.g., 'Python Jobs San Francisco'" required>
+                </div>
+                <div class="form-group">
+                    <label>Frequency</label>
+                    <select id="alertFrequency">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="instant">Instant</option>
+                    </select>
+                </div>
+                <div class="alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <p>You'll receive alerts for new jobs matching: <strong id="alertKeywords"></strong></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelAlert" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="createAlert" class="btn btn-primary">Create Alert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts List Modal -->
+    <div id="alertsListModal" class="modal hidden" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Job Alerts</h2>
+                <button id="closeAlertsModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="alertsList" class="alerts-list">
+                    <p class="empty-state">No alerts yet. Create one to get started!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jobs.js') }}"></script>
+{% endblock %}

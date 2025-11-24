@@ -2,7 +2,6 @@
 Configuration Module
 Application configuration management
 """
+from .config import Config, config
 
-from .config import Config
-
-__all__ = ['Config']
+__all__ = ["Config", "config"]

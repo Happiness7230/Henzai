@@ -10,6 +10,9 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
 # Import Phase 1 components
 from src.config.config import Config
 from src.external.serpapi_client import SerpAPIClient, SerpAPIException
@@ -19,12 +22,6 @@ from src.external.google_search_client import GoogleSearchClient
 from src.marketplace.marketplace_client import MarketplaceClient
 from src.marketplace.price_alerts import PriceAlertManager
 from src.jobs.job_search_client import JobSearchClient, JobAlertManager
-
-from src.search.search_manager import SearchManager
-from src.external.google_search_client import GoogleSearchClient
-
-google_client = GoogleSearchClient()
-search_manager = SearchManager(google_client=GoogleSearchClient())
 
 # Import existing components (assuming they exist)
 try:
@@ -55,7 +52,11 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__,
+    template_folder=os.path.join(basedir, 'templates'),
+    static_folder=os.path.join(basedir, 'static'),
+    static_url_path='/static')
+
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 app.config['JSON_SORT_KEYS'] = False
 
@@ -63,7 +64,7 @@ app.config['JSON_SORT_KEYS'] = False
 if Config.CORS_ENABLED:
     CORS(app, origins=Config.CORS_ORIGINS)
 
-# Initialize components
+# Initialize all global components as None
 cache_manager = None
 local_ranker = None
 serpapi_client = None
@@ -71,13 +72,161 @@ search_manager = None
 analytics_store = None
 metrics_collector = None
 spider = None
+google_client = None
+marketplace_client = None
+price_alert_manager = None
+job_search_client = None
+job_alert_manager = None
+
+# Override variables for components passed from main.py
+_local_ranker_override = None
+_spider_override = None
+_indexer_override = None
+_tokenizer_override = None
+_database_override = None
+_search_manager_override = None
+
+
+def get_ranker():
+    """Get the ranker instance"""
+    if _local_ranker_override:
+        return _local_ranker_override
+    return local_ranker
+
+
+def get_indexer():
+    """Get the indexer instance"""
+    if _indexer_override:
+        return _indexer_override
+    raise RuntimeError("Indexer not initialized")
+
+
+def get_spider():
+    """Get the spider instance"""
+    if _spider_override:
+        return _spider_override
+    return spider
+
+
+def get_tokenizer():
+    """Get the tokenizer instance"""
+    if _tokenizer_override:
+        return _tokenizer_override
+    raise RuntimeError("Tokenizer not initialized")
+
+
+def get_database():
+    """Get the database instance"""
+    if _database_override:
+        return _database_override
+    raise RuntimeError("Database not initialized")
+
+
+def get_search_manager():
+    """Get the search manager instance"""
+    if _search_manager_override:
+        return _search_manager_override
+    return search_manager
+
+
+def set_components(ranker=None, spider=None, indexer=None, tokenizer=None, database=None, search_manager_instance=None, 
+                   marketplace_client_instance=None, job_search_client_instance=None, price_alert_manager_instance=None, job_alert_manager_instance=None):
+    """
+    Set component overrides from main.py
+    This allows main.py to pass its initialized components to the Flask app
+    """
+    global _local_ranker_override, _spider_override, _indexer_override, _tokenizer_override, _database_override, _search_manager_override
+    global marketplace_client, job_search_client, price_alert_manager, job_alert_manager
+    
+    logger.info(f"set_components called with: ranker={ranker is not None}, spider={spider is not None}, indexer={indexer is not None}, tokenizer={tokenizer is not None}, database={database is not None}, search_manager={search_manager_instance is not None}, marketplace={marketplace_client_instance is not None}, jobs={job_search_client_instance is not None}")
+    
+    if ranker:
+        _local_ranker_override = ranker
+        logger.info("✓ Local ranker set from main.py")
+    else:
+        logger.warning("⚠ Ranker was None")
+    
+    if spider:
+        _spider_override = spider
+        logger.info("✓ Spider set from main.py")
+    else:
+        logger.warning("⚠ Spider was None")
+    
+    if indexer:
+        _indexer_override = indexer
+        logger.info("✓ Indexer set from main.py")
+    else:
+        logger.warning("⚠ Indexer was None")
+    
+    if tokenizer:
+        _tokenizer_override = tokenizer
+        logger.info("✓ Tokenizer set from main.py")
+    else:
+        logger.warning("⚠ Tokenizer was None")
+
+    if database:
+        _database_override = database
+        logger.info("✓ Database set from main.py")
+    else:
+        logger.warning("⚠ Database was None")
+    
+    if search_manager_instance:
+        _search_manager_override = search_manager_instance
+        logger.info("✓ SearchManager set from main.py")
+    else:
+        logger.warning("⚠ SearchManager was None")
+    
+    # Store marketplace and job clients
+    if marketplace_client_instance:
+        marketplace_client = marketplace_client_instance
+        logger.info("✓ Marketplace client set from main.py")
+    
+    if job_search_client_instance:
+        job_search_client = job_search_client_instance
+        logger.info("✓ Job search client set from main.py")
+    
+    if price_alert_manager_instance:
+        price_alert_manager = price_alert_manager_instance
+        logger.info("✓ Price alert manager set from main.py")
+    
+    if job_alert_manager_instance:
+        job_alert_manager = job_alert_manager_instance
+        logger.info("✓ Job alert manager set from main.py")
+
 
 def initialize_components():
     """Initialize all application components"""
-    global cache_manager, local_ranker, serpapi_client, search_manager
-    global analytics_store, metrics_collector, spider
+    global cache_manager, local_ranker, analytics_store, metrics_collector, spider
+    global serpapi_client, search_manager
+    global google_client, marketplace_client, price_alert_manager
+    global job_search_client, job_alert_manager
     
-    logger.info("Initializing application components...")
+    logger.info("="*60)
+    logger.info("Initializing Application Components")
+    logger.info("="*60)
+    
+    # Use components from main.py if available
+    if _local_ranker_override:
+        local_ranker = _local_ranker_override
+        logger.info("✓ Using ranker from main.py")
+    elif AdvancedRanker:
+        try:
+            from src.indexing.indexer import Indexer
+            indexer = _indexer_override or Indexer()
+            local_ranker = AdvancedRanker(indexer=indexer)
+            logger.info("✓ Local Ranker initialized")
+        except Exception as e:
+            logger.warning(f"Local Ranker failed: {e}")
+    
+    if _spider_override:
+        spider = _spider_override
+        logger.info("✓ Using spider from main.py")
+    elif Spider:
+        try:
+            spider = Spider()
+            logger.info("✓ Spider initialized")
+        except Exception as e:
+            logger.warning(f"Spider failed: {e}")
     
     # Initialize cache
     if CacheManager and Config.CACHE_ENABLED:
@@ -87,117 +236,44 @@ def initialize_components():
         except Exception as e:
             logger.warning(f"Cache initialization failed: {e}")
     
-    # Initialize tokenizer and indexer (required for ranker and spider)
-    tokenizer = None
-    indexer = None
-    try:
-        from src.processing.tokenizer import Tokenizer
-        from src.indexing.indexer import Indexer
-        from src.storage.database import Database
-        
-        tokenizer = Tokenizer()
-        database = Database(os.path.join(Config.STORAGE_DATA_DIR, 'index.json'))
-        indexer = Indexer(database, tokenizer)
-        logger.info("✓ Tokenizer and indexer initialized")
-    except Exception as e:
-        logger.warning(f"Tokenizer/Indexer initialization failed: {e}")
-    
-    # Initialize local ranker (requires indexer)
-    if AdvancedRanker and indexer:
-        try:
-            local_ranker = AdvancedRanker(indexer)
-            logger.info("✓ Local ranker initialized")
-        except Exception as e:
-            logger.warning(f"Local ranker initialization failed: {e}")
-    
-    # Initialize SerpAPI client
-    if Config.SERPAPI_ENABLED:
-        try:
-            serpapi_client = SerpAPIClient(timeout=Config.SERPAPI_TIMEOUT)
-            if serpapi_client.health_check():
-                logger.info("✓ SerpAPI client initialized and connected")
-            else:
-                logger.warning("SerpAPI health check failed")
-                serpapi_client = None
-        except Exception as e:
-            logger.error(f"SerpAPI initialization failed: {e}")
-            serpapi_client = None
-    
-    # Initialize search manager
-    search_manager = SearchManager(
-        local_ranker=local_ranker,
-        serpapi_client=serpapi_client,
-        cache_manager=cache_manager,
-        mode=Config.SEARCH_MODE
-    )
-    logger.info(f"✓ Search manager initialized in '{Config.SEARCH_MODE}' mode")
-    
-    # Initialize analytics
-    if AnalyticsStore and Config.ANALYTICS_ENABLED:
-        try:
-            analytics_store = AnalyticsStore()
-            logger.info("✓ Analytics store initialized")
-        except Exception as e:
-            logger.warning(f"Analytics initialization failed: {e}")
-    
-    # Initialize metrics
-    if MetricsCollector:
-        try:
-            metrics_collector = MetricsCollector()
-            logger.info("✓ Metrics collector initialized")
-        except Exception as e:
-            logger.warning(f"Metrics initialization failed: {e}")
-    
-    # Initialize crawler (requires tokenizer and indexer)
-    if Spider and tokenizer and indexer:
-        try:
-            spider = Spider(tokenizer, indexer, max_workers=Config.CRAWLER_MAX_WORKERS)
-            logger.info("✓ Spider initialized")
-        except Exception as e:
-            logger.warning(f"Spider initialization failed: {e}")
-    
-    logger.info("Application initialization complete!")
-
-# existing global services
-db = None
-search_engine = None
-metrics = None
-
-# ADD these after existing global variables ⬇
-search_manager = None
-google_client = None
-marketplace_client = None
-price_alert_manager = None
-job_search_client = None
-job_alert_manager = None
-
-# Initialize on startup
-
-def initialize_components():
-    """Initialize all application components"""
-    global cache_manager, local_ranker, serpapi_client, search_manager
-    global analytics_store, metrics_collector, spider
-    global google_client, marketplace_client, price_alert_manager  # ADD THIS LINE
-    global job_search_client, job_alert_manager  # ADD THIS LINE
-    
-    logger.info("Initializing application components...")
-    
-    initialize_components()
-    
-    # ADD THESE NEW SECTIONS:
-    
     # Initialize Google Search client
-    if Config.GOOGLE_ENABLED:
+    google_enabled = os.getenv('GOOGLE_ENABLED', 'false').lower() == 'true'
+    if google_enabled and os.getenv('GOOGLE_API_KEY') and os.getenv('GOOGLE_SEARCH_ENGINE_ID'):
         try:
             google_client = GoogleSearchClient()
-            if google_client.health_check():
-                logger.info("✓ Google Search client initialized and connected")
-            else:
-                logger.warning("Google Search health check failed")
-                google_client = None
+            # Don't fail if health check fails—client may still work
+            try:
+                if google_client.health_check():
+                    logger.info("✓ Google Search client initialized and connected")
+                else:
+                    logger.warning("Google Search health check failed, but client will still attempt searches")
+            except Exception as hc_error:
+                logger.debug(f"Google Search health check error (non-critical): {hc_error}")
         except Exception as e:
             logger.error(f"Google Search initialization failed: {e}")
             google_client = None
+    else:
+        if google_enabled and (not os.getenv('GOOGLE_API_KEY') or not os.getenv('GOOGLE_SEARCH_ENGINE_ID')):
+            logger.warning("Google Search enabled but API credentials not set—searches will fall back to serpapi/local")
+    
+    # Initialize SerpAPI client
+    if Config.SERPAPI_ENABLED and Config.SERPAPI_KEY:
+        try:
+            serpapi_client = SerpAPIClient(timeout=Config.SERPAPI_TIMEOUT)
+            # Don't fail if health check fails—client may still work
+            try:
+                if serpapi_client.health_check():
+                    logger.info("✓ SerpAPI client initialized and connected")
+                else:
+                    logger.warning("SerpAPI health check failed, but client will still attempt searches")
+            except Exception as hc_error:
+                logger.debug(f"SerpAPI health check error (non-critical): {hc_error}")
+        except Exception as e:
+            logger.error(f"SerpAPI initialization failed: {e}")
+            serpapi_client = None
+    else:
+        if Config.SERPAPI_ENABLED and not Config.SERPAPI_KEY:
+            logger.warning("SerpAPI enabled but SERPAPI_KEY not set—searches will fall back to local/google")
     
     # Initialize Marketplace client
     try:
@@ -227,16 +303,37 @@ def initialize_components():
     except Exception as e:
         logger.warning(f"Job alert manager initialization failed: {e}")
     
-    # UPDATE Search Manager initialization to include google_client:
-    search_manager = SearchManager(
-        local_ranker=local_ranker,
-        serpapi_client=serpapi_client,
-        google_client=google_client,  # ADD THIS LINE
-        cache_manager=cache_manager,
-        mode=Config.SEARCH_MODE
-    )
-    logger.info(f"✓ Search manager initialized in '{Config.SEARCH_MODE}' mode")
+    # Initialize search manager with all clients (only if not set from main.py)
+    if not _search_manager_override:
+        search_manager = SearchManager(
+            google_client=google_client,
+            local_ranker=local_ranker or _local_ranker_override,
+            serpapi_client=serpapi_client,
+            cache_manager=cache_manager,
+            mode=Config.SEARCH_MODE
+        )
+        logger.info(f"✓ Search manager initialized in '{Config.SEARCH_MODE}' mode")
+    else:
+        search_manager = _search_manager_override
+        logger.info("✓ Using search manager from main.py")
     
+    # Initialize analytics
+    if AnalyticsStore and Config.ANALYTICS_ENABLED:
+        try:
+            analytics_store = AnalyticsStore()
+            logger.info("✓ Analytics store initialized")
+        except Exception as e:
+            logger.warning(f"Analytics initialization failed: {e}")
+    
+    # Initialize metrics
+    if MetricsCollector:
+        try:
+            metrics_collector = MetricsCollector()
+            logger.info("✓ Metrics collector initialized")
+        except Exception as e:
+            logger.warning(f"Metrics initialization failed: {e}")
+    
+    logger.info("Application initialization complete!")
 
 
 # ============================================================================
@@ -256,15 +353,30 @@ def results():
     return render_template('results.html', query=query)
 
 
+@app.route('/marketplace')
+def marketplace_page():
+    """Render marketplace search page"""
+    query = request.args.get('q', '')
+    return render_template('marketplace.html', query=query)
+
+
+@app.route('/jobs')
+def jobs_page():
+    """Render job search page"""
+    query = request.args.get('q', '')
+    return render_template('jobs.html', query=query)
+
+
 # ============================================================================
-# ROUTES - Search API (NEW)
+# ROUTES - Search API
 # ============================================================================
 
 @app.route('/api/search', methods=['GET', 'POST'])
 def api_search():
     """
     Unified search endpoint
-    
+    Uses: Local Index + SerpAPI + Google Search
+
     Query Parameters / JSON Body:
         q (str): Search query
         max_results (int): Maximum results (default: 10)
@@ -278,6 +390,18 @@ def api_search():
         JSON with search results
     """
     start_time = datetime.now()
+    
+    # Get the search manager (from override or global)
+    current_search_manager = get_search_manager()
+    
+    # Safety check for search_manager
+    if current_search_manager is None:
+        logger.error("Search manager not initialized")
+        return jsonify({
+            'status': 'error',
+            'error': 'Search service is not available. Please check server configuration.',
+            'details': 'Search manager not initialized'
+        }), 503
     
     try:
         # Get parameters
@@ -293,7 +417,7 @@ def api_search():
                 'status': 'error'
             }), 400
         
-        max_results = int(data.get('max_results', 10))
+        max_results = int(data.get('max_results', 100))
         mode_override = data.get('mode')
         safe_search = data.get('safe_search', 'true').lower() == 'true'
         region = data.get('region', 'wt-wt')
@@ -301,12 +425,12 @@ def api_search():
         filters = data.get('filters', {})
         
         # Temporarily override mode if requested
-        original_mode = search_manager.mode
+        original_mode = current_search_manager.mode
         if mode_override and mode_override in ['local', 'serpapi', 'hybrid']:
-            search_manager.set_mode(mode_override)
+            current_search_manager.set_mode(mode_override)
         
         # Perform search
-        results = search_manager.search(
+        results = current_search_manager.search(
             query=query,
             max_results=max_results,
             filters=filters,
@@ -317,7 +441,7 @@ def api_search():
         
         # Restore original mode
         if mode_override:
-            search_manager.set_mode(original_mode)
+            current_search_manager.set_mode(original_mode)
         
         # Track analytics
         if analytics_store:
@@ -341,6 +465,11 @@ def api_search():
             'data': results
         })
     
+    except ValueError as e:
+        return jsonify({
+            'error': f'Invalid parameter value: {str(e)}',
+            'status': 'error'
+        }), 400
     except Exception as e:
         logger.error(f"Search error: {str(e)}", exc_info=True)
         return jsonify({
@@ -357,11 +486,19 @@ def api_suggestions():
     
     Query Parameters:
         q (str): Partial query
-        max (int): Maximum suggestions (default: 10)
+        max (int): Maximum suggestions (default: 30)
     
     Returns:
         JSON with suggestion list
     """
+    current_search_manager = get_search_manager()
+    
+    if current_search_manager is None:
+        return jsonify({
+            'status': 'error',
+            'error': 'Search service not available'
+        }), 503
+    
     try:
         query = request.args.get('q', '').strip()
         if not query:
@@ -373,7 +510,7 @@ def api_suggestions():
         max_suggestions = int(request.args.get('max', 10))
         
         # Get suggestions from search manager
-        suggestions = search_manager.get_suggestions(query, max_suggestions)
+        suggestions = current_search_manager.get_suggestions(query, max_suggestions)
         
         return jsonify({
             'status': 'success',
@@ -409,7 +546,7 @@ def api_search_news():
                 'error': 'Query parameter "q" is required'
             }), 400
         
-        max_results = int(request.args.get('max_results', 10))
+        max_results = int(request.args.get('max_results', 100))
         
         if not serpapi_client:
             return jsonify({
@@ -488,6 +625,14 @@ def api_set_search_mode():
     Returns:
         JSON with success status
     """
+    current_search_manager = get_search_manager()
+    
+    if current_search_manager is None:
+        return jsonify({
+            'status': 'error',
+            'error': 'Search service not available'
+        }), 503
+    
     try:
         data = request.get_json() or {}
         mode = data.get('mode', '').lower()
@@ -498,7 +643,7 @@ def api_set_search_mode():
                 'error': 'Mode parameter is required'
             }), 400
         
-        if search_manager.set_mode(mode):
+        if current_search_manager.set_mode(mode):
             return jsonify({
                 'status': 'success',
                 'mode': mode,
@@ -519,7 +664,7 @@ def api_set_search_mode():
 
 
 # ============================================================================
-# ROUTES - Crawling (Updated)
+# ROUTES - Crawling
 # ============================================================================
 
 @app.route('/api/crawl', methods=['POST'])
@@ -535,7 +680,9 @@ def api_crawl():
         JSON with crawl status
     """
     try:
-        if not spider:
+        current_spider = get_spider()
+        
+        if not current_spider:
             return jsonify({
                 'status': 'error',
                 'error': 'Crawler not initialized'
@@ -552,7 +699,7 @@ def api_crawl():
             }), 400
         
         # Start crawling
-        results = spider.crawl(urls, max_depth=max_depth)
+        results = current_spider.crawl(urls, max_depth=max_depth)
         
         return jsonify({
             'status': 'success',
@@ -569,7 +716,7 @@ def api_crawl():
 
 
 # ============================================================================
-# ROUTES - Analytics & Statistics (NEW)
+# ROUTES - Analytics & Statistics
 # ============================================================================
 
 @app.route('/api/analytics', methods=['GET'])
@@ -581,8 +728,10 @@ def api_analytics():
         JSON with analytics data
     """
     try:
+        current_search_manager = get_search_manager()
+        
         analytics = {
-            'search_manager': search_manager.get_stats() if search_manager else {},
+            'search_manager': current_search_manager.get_stats() if current_search_manager else {},
             'serpapi': serpapi_client.get_stats() if serpapi_client else {},
             'cache': cache_manager.get_stats() if cache_manager else {}
         }
@@ -614,23 +763,28 @@ def api_stats():
         JSON with system stats
     """
     try:
+        current_search_manager = get_search_manager()
+        
         stats = {
-            'search_mode': search_manager.mode if search_manager else 'unknown',
+            'search_mode': current_search_manager.mode if current_search_manager else 'unknown',
             'serpapi_enabled': Config.SERPAPI_ENABLED,
             'cache_enabled': Config.CACHE_ENABLED,
             'analytics_enabled': Config.ANALYTICS_ENABLED,
             'components': {
-                'search_manager': search_manager is not None,
+                'search_manager': current_search_manager is not None,
                 'serpapi_client': serpapi_client is not None,
-                'local_ranker': local_ranker is not None,
+                'google_client': google_client is not None,
+                'local_ranker': get_ranker() is not None,
                 'cache_manager': cache_manager is not None,
                 'analytics_store': analytics_store is not None,
-                'spider': spider is not None
+                'spider': get_spider() is not None,
+                'marketplace_client': marketplace_client is not None,
+                'job_search_client': job_search_client is not None
             }
         }
         
-        if search_manager:
-            stats['search_stats'] = search_manager.get_stats()
+        if current_search_manager:
+            stats['search_stats'] = current_search_manager.get_stats()
         
         return jsonify({
             'status': 'success',
@@ -646,7 +800,7 @@ def api_stats():
 
 
 # ============================================================================
-# ROUTES - Health & Monitoring (Updated)
+# ROUTES - Health & Monitoring
 # ============================================================================
 
 @app.route('/health', methods=['GET'])
@@ -661,23 +815,36 @@ def health_check():
         health = {
             'status': 'healthy',
             'timestamp': datetime.now().isoformat(),
-            'components': {}
+            'components': {
+                'local_ranker': get_ranker() is not None,
+                'cache_manager': cache_manager is not None,
+                'spider': get_spider() is not None,
+                'serpapi': serpapi_client is not None,
+                'google_search': google_client is not None,
+                'marketplace': marketplace_client is not None,
+                'job_search': job_search_client is not None
+            }
         }
         
         # Check SerpAPI
         if serpapi_client:
             health['components']['serpapi'] = serpapi_client.health_check()
         
+        # Check Google Search
+        if google_client:
+            health['components']['google'] = google_client.health_check()
+        
         # Check cache
         if cache_manager:
             health['components']['cache'] = True
         
         # Check search manager
-        if search_manager:
+        current_search_manager = get_search_manager()
+        if current_search_manager:
             health['components']['search_manager'] = True
         
         # Overall status
-        all_healthy = all(health['components'].values())
+        all_healthy = all(health['components'].values()) if health['components'] else False
         health['status'] = 'healthy' if all_healthy else 'degraded'
         
         status_code = 200 if all_healthy else 503
@@ -702,10 +869,11 @@ def api_metrics():
     """
     try:
         metrics = []
+        current_search_manager = get_search_manager()
         
         # Search metrics
-        if search_manager:
-            stats = search_manager.get_stats()
+        if current_search_manager:
+            stats = current_search_manager.get_stats()
             metrics.append(f'search_total_searches {stats.get("total_searches", 0)}')
             metrics.append(f'search_cache_hits {stats.get("cache_hits", 0)}')
             metrics.append(f'search_avg_response_time {stats.get("avg_response_time", 0)}')
@@ -725,7 +893,7 @@ def api_metrics():
 
 
 # ============================================================================
-# ROUTES - Cache Management (NEW)
+# ROUTES - Cache Management
 # ============================================================================
 
 @app.route('/api/cache/stats', methods=['GET'])
@@ -779,191 +947,8 @@ def api_cache_clear():
 
 
 # ============================================================================
-# Error Handlers
+# ROUTES - Marketplace
 # ============================================================================
-
-@app.errorhandler(404)
-def not_found(error):
-    """Handle 404 errors"""
-    return jsonify({
-        'status': 'error',
-        'error': 'Not found',
-        'code': 404
-    }), 404
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    """Handle 500 errors"""
-    logger.error(f"Internal server error: {str(error)}")
-    return jsonify({
-        'status': 'error',
-        'error': 'Internal server error',
-        'code': 500
-    }), 500
-
-
-@app.errorhandler(Exception)
-def handle_exception(error):
-    """Handle all uncaught exceptions"""
-    logger.error(f"Unhandled exception: {str(error)}", exc_info=True)
-    return jsonify({
-        'status': 'error',
-        'error': str(error)
-    }), 500
-
-
-# ============================================================================
-# Application Entry Point
-# ============================================================================
-
-if __name__ == '__main__':
-    # Print configuration
-    logger.info("Starting Flask application...")
-    Config.print_config()
-    
-    # Run app
-    app.run(
-        host='0.0.0.0',
-        port=Config.FLASK_PORT,
-        debug=Config.FLASK_DEBUG
-    )
-# Initialize job search components
-job_search_client = None
-job_alert_manager = None
-
-def initialize_job_components():
-    global job_search_client, job_alert_manager
-    
-    from src.jobs.job_search_client import JobSearchClient, JobAlertManager
-    
-    try:
-        job_search_client = JobSearchClient()
-        logger.info("✓ Job search client initialized")
-    except Exception as e:
-        logger.warning(f"Job search initialization failed: {e}")
-    
-    try:
-        job_alert_manager = JobAlertManager()
-        logger.info("✓ Job alert manager initialized")
-    except Exception as e:
-        logger.warning(f"Job alert manager initialization failed: {e}")
-
-# Call in initialize_components()
-initialize_job_components()
-
-# === JOB SEARCH ENDPOINTS ===
-
-@app.route('/api/jobs/search', methods=['GET', 'POST'])
-def api_job_search():
-    """Search for jobs"""
-    try:
-        if not job_search_client:
-            return jsonify({
-                'status': 'error',
-                'error': 'Job search not available'
-            }), 503
-        
-        if request.method == 'POST':
-            data = request.get_json() or {}
-        else:
-            data = request.args.to_dict()
-        
-        query = data.get('q', '').strip()
-        if not query:
-            return jsonify({
-                'status': 'error',
-                'error': 'Query parameter "q" is required'
-            }), 400
-        
-        results = job_search_client.search_jobs(
-            query=query,
-            location=data.get('location', ''),
-            max_results=int(data.get('max_results', 20)),
-            remote_only=data.get('remote_only', 'false').lower() == 'true',
-            min_salary=int(data['min_salary']) if data.get('min_salary') else None,
-            experience_level=data.get('experience_level'),
-            job_type=data.get('job_type'),
-            sources=data.get('sources', '').split(',') if data.get('sources') else None
-        )
-        
-        return jsonify({
-            'status': 'success',
-            'data': results
-        })
-    
-    except Exception as e:
-        logger.error(f"Job search error: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'error': str(e)
-        }), 500
-
-
-@app.route('/api/jobs/alerts', methods=['GET', 'POST'])
-def api_job_alerts():
-    """Get or create job alerts"""
-    try:
-        if not job_alert_manager:
-            return jsonify({
-                'status': 'error',
-                'error': 'Job alerts not available'
-            }), 503
-        
-        if request.method == 'GET':
-            email = request.args.get('email')
-            if not email:
-                return jsonify({
-                    'status': 'error',
-                    'error': 'Email parameter is required'
-                }), 400
-            
-            alerts = job_alert_manager.get_user_alerts(email)
-            return jsonify({
-                'status': 'success',
-                'data': alerts
-            })
-        
-        else:  # POST
-            data = request.get_json() or {}
-            required = ['email', 'keywords', 'location']
-            
-            for field in required:
-                if field not in data:
-                    return jsonify({
-                        'status': 'error',
-                        'error': f'Missing required field: {field}'
-                    }), 400
-            
-            alert_id = job_alert_manager.create_alert(
-                user_email=data['email'],
-                keywords=data['keywords'],
-                location=data['location'],
-                remote_only=data.get('remote_only', False),
-                min_salary=int(data['min_salary']) if data.get('min_salary') else None
-            )
-            
-            return jsonify({
-                'status': 'success',
-                'alert_id': alert_id,
-                'message': 'Job alert created successfully'
-            })
-    
-    except Exception as e:
-        logger.error(f"Job alert error: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'error': str(e)
-        }), 500
-    
-# === MARKETPLACE ENDPOINTS ===
-
-@app.route('/marketplace')
-def marketplace_page():
-    """Render marketplace search page"""
-    query = request.args.get('q', '')
-    return render_template('marketplace.html', query=query)
-
 
 @app.route('/api/marketplace/search', methods=['GET', 'POST'])
 def api_marketplace_search():
@@ -987,7 +972,7 @@ def api_marketplace_search():
                 'error': 'Query parameter "q" is required'
             }), 400
         
-        max_results = int(data.get('max_results', 10))
+        max_results = int(data.get('max_results', 30))
         marketplaces = data.get('marketplaces', '').split(',') if data.get('marketplaces') else None
         min_price = float(data['min_price']) if data.get('min_price') else None
         max_price = float(data['max_price']) if data.get('max_price') else None
@@ -1164,3 +1149,164 @@ def api_price_alert_detail(alert_id):
             'error': str(e)
         }), 500
 
+
+# ============================================================================
+# ROUTES - Job Search
+# ============================================================================
+
+@app.route('/api/jobs/search', methods=['GET', 'POST'])
+def api_job_search():
+    """Search for jobs"""
+    try:
+        if not job_search_client:
+            return jsonify({
+                'status': 'error',
+                'error': 'Job search not available'
+            }), 503
+        
+        if request.method == 'POST':
+            data = request.get_json() or {}
+        else:
+            data = request.args.to_dict()
+        
+        query = data.get('q', '').strip()
+        if not query:
+            return jsonify({
+                'status': 'error',
+                'error': 'Query parameter "q" is required'
+            }), 400
+        
+        results = job_search_client.search_jobs(
+            query=query,
+            location=data.get('location', ''),
+            max_results=int(data.get('max_results', 20)),
+            remote_only=data.get('remote_only', 'false').lower() == 'true',
+            min_salary=int(data['min_salary']) if data.get('min_salary') else None,
+            experience_level=data.get('experience_level'),
+            job_type=data.get('job_type'),
+            sources=data.get('sources', '').split(',') if data.get('sources') else None
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'data': results
+        })
+    
+    except Exception as e:
+        logger.error(f"Job search error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/jobs/alerts', methods=['GET', 'POST'])
+def api_job_alerts():
+    """Get or create job alerts"""
+    try:
+        if not job_alert_manager:
+            return jsonify({
+                'status': 'error',
+                'error': 'Job alerts not available'
+            }), 503
+        
+        if request.method == 'GET':
+            email = request.args.get('email')
+            if not email:
+                return jsonify({
+                    'status': 'error',
+                    'error': 'Email parameter is required'
+                }), 400
+            
+            alerts = job_alert_manager.get_user_alerts(email)
+            return jsonify({
+                'status': 'success',
+                'data': alerts
+            })
+        
+        else:  # POST
+            data = request.get_json() or {}
+            required = ['email', 'keywords', 'location']
+            
+            for field in required:
+                if field not in data:
+                    return jsonify({
+                        'status': 'error',
+                        'error': f'Missing required field: {field}'
+                    }), 400
+            
+            alert_id = job_alert_manager.create_alert(
+                user_email=data['email'],
+                keywords=data['keywords'],
+                location=data['location'],
+                remote_only=data.get('remote_only', False),
+                min_salary=int(data['min_salary']) if data.get('min_salary') else None
+            )
+            
+            return jsonify({
+                'status': 'success',
+                'alert_id': alert_id,
+                'message': 'Job alert created successfully'
+            })
+    
+    except Exception as e:
+        logger.error(f"Job alert error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
+
+
+# ============================================================================
+# Error Handlers
+# ============================================================================
+
+@app.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors"""
+    return jsonify({
+        'status': 'error',
+        'error': 'Not found',
+        'code': 404
+    }), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors"""
+    logger.error(f"Internal server error: {str(error)}")
+    return jsonify({
+        'status': 'error',
+        'error': 'Internal server error',
+        'code': 500
+    }), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    """Handle all uncaught exceptions"""
+    logger.error(f"Unhandled exception: {str(error)}", exc_info=True)
+    return jsonify({
+        'status': 'error',
+        'error': str(error)
+    }), 500
+
+
+# ============================================================================
+# Application Entry Point
+# ============================================================================
+
+if __name__ == '__main__':
+    # Print configuration
+    logger.info("Starting Flask application...")
+    Config.print_config()
+    
+    # Initialize all components
+    initialize_components()
+    
+    # Run app
+    app.run(
+        host='0.0.0.0',
+        port=Config.FLASK_PORT,
+        debug=Config.FLASK_DEBUG
+    )

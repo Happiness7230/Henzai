@@ -13,7 +13,6 @@ load_dotenv()
 
 class Config:
     """Application configuration manager"""
-    
     # Flask Configuration
     FLASK_APP = os.getenv('FLASK_APP', 'main.py')
     FLASK_ENV = os.getenv('FLASK_ENV', 'development')
@@ -25,8 +24,15 @@ class Config:
     SERPAPI_KEY = os.getenv('SERPAPI_KEY', '')
     SERPAPI_ENABLED = os.getenv('SERPAPI_ENABLED', 'false').lower() == 'true'
     SERPAPI_TIMEOUT = int(os.getenv('SERPAPI_TIMEOUT', 5))
-    SERPAPI_MAX_RESULTS = int(os.getenv('SERPAPI_MAX_RESULTS', 10))
+    SERPAPI_MAX_RESULTS = int(os.getenv('SERPAPI_MAX_RESULTS', 20))
     
+    # Google Custom Search Configuration
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
+    GOOGLE_SEARCH_ENGINE_ID = os.getenv('GOOGLE_SEARCH_ENGINE_ID', '')
+    GOOGLE_ENABLED = os.getenv('GOOGLE_ENABLED', 'false').lower() == 'true'
+    GOOGLE_TIMEOUT = int(os.getenv('GOOGLE_TIMEOUT', 10))
+    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+
     # Search Mode Configuration
     SEARCH_MODE = os.getenv('SEARCH_MODE', 'hybrid')  # local, serpapi, hybrid
     
@@ -87,6 +93,10 @@ class Config:
     # Security
     CORS_ENABLED = os.getenv('CORS_ENABLED', 'true').lower() == 'true'
     CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')
+
+    WEB_HOST = '127.0.0.1'
+    WEB_PORT = int(os.getenv('WEB_PORT', 8080))
+    WEB_DEBUG = os.getenv('WEB_DEBUG', 'true').lower() == 'true'
     
     @classmethod
     def validate(cls) -> bool:
@@ -162,16 +172,31 @@ class Config:
             print(f"{key}: {display_value}")
         
         print("="*50 + "\n")
+     # Crawler Settings
+    CRAWLER_MAX_WORKERS = int(os.getenv('CRAWLER_MAX_WORKERS', 10))  # ✓ Changed default from 5 to 10
+    CRAWLER_TIMEOUT = int(os.getenv('CRAWLER_TIMEOUT', 10))
+    CRAWLER_RESPECT_ROBOTS = os.getenv('CRAWLER_RESPECT_ROBOTS', 'true').lower() == 'true'
+    CRAWLER_USER_AGENT = os.getenv('CRAWLER_USER_AGENT', 'CustomSearchBot/1.0')
+    
+    # Search Results Configuration
+    DEFAULT_MAX_RESULTS = int(os.getenv('DEFAULT_MAX_RESULTS', 20))    # Default: 20 results
+    SERPAPI_MAX_RESULTS = int(os.getenv('SERPAPI_MAX_RESULTS', 20))    # Max for SerpAPI
+    GOOGLE_MAX_RESULTS = int(os.getenv('GOOGLE_MAX_RESULTS', 20))      # Max for Google
+    LOCAL_MAX_RESULTS = int(os.getenv('LOCAL_MAX_RESULTS', 20))        # Max for local search
+    MARKETPLACE_MAX_RESULTS = int(os.getenv('MARKETPLACE_MAX_RESULTS', 20))  # Max for marketplace
+    JOBS_MAX_RESULTS = int(os.getenv('JOBS_MAX_RESULTS', 20))          # Max for job search
 
+config = Config()  
 
 # Validate configuration on import
 if not Config.validate():
     print("Warning: Configuration validation failed. Please check your .env file.")
     
     # Google Search API
-    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
-    GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID', '')
     GOOGLE_ENABLED = os.getenv('GOOGLE_ENABLED', 'false').lower() == 'true'
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
+    GOOGLE_SEARCH_ENGINE_ID = os.getenv('GOOGLE_SEARCH_ENGINE_ID', '')
+    GOOGLE_TIMEOUT = int(os.getenv('GOOGLE_TIMEOUT', '10'))
     
     # Marketplace APIs
     AMAZON_ACCESS_KEY = os.getenv('AMAZON_ACCESS_KEY', '')

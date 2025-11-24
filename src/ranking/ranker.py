@@ -70,7 +70,8 @@ class Ranker:
         self._update_cache()
         
         # Get document frequency (number of docs containing this term)
-        df = len(self.indexer.index.get(term, {}))
+        # postings is a list of [doc_id, freq] pairs, so len() gives doc frequency
+        df = len(self.indexer.index.get(term, []))
         
         # BM25 IDF formula
         # Adding 1 ensures IDF is never negative
@@ -147,7 +148,10 @@ class Ranker:
         
         for term in query_tokens:
             # Get document scores for each term
-            postings = self.indexer.index.get(term, {})            # Calculate BM25 score for each document containing this term
+            # postings is a list of [doc_id, freq] pairs, not a dict
+            postings = self.indexer.index.get(term, [])
+            
+            # Calculate BM25 score for each document containing this term
             for doc_id, term_freq in postings:
                 bm25_score = self._calculate_bm25_score(term, doc_id, term_freq)
                 doc_scores[doc_id] += bm25_score
@@ -182,7 +186,7 @@ class Ranker:
         doc_scores: Dict[str, float] = defaultdict(float)
         
         for term in query_tokens:
-            postings = self.indexer.inverted_index.get(term, {})
+            postings = self.indexer.index.get(term, [])
             
             if not postings:
                 continue
@@ -191,7 +195,7 @@ class Ranker:
             idf = math.log(self._total_docs / len(postings))
             
             # Calculate TF-IDF for each document
-            for doc_id, term_freq in postings.items():
+            for doc_id, term_freq in postings:
                 doc_length = self._doc_lengths.get(doc_id, 1)
                 
                 # TF = term_freq / doc_length (normalized)

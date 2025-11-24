@@ -33,10 +33,11 @@ class GoogleSearchClient:
             cse_id: Custom Search Engine ID
         """
         self.api_key = api_key or os.getenv('GOOGLE_API_KEY')
-        self.cse_id = cse_id or os.getenv('GOOGLE_CSE_ID')
+        # Support both naming conventions: GOOGLE_CSE_ID and GOOGLE_SEARCH_ENGINE_ID
+        self.cse_id = cse_id or os.getenv('GOOGLE_SEARCH_ENGINE_ID') or os.getenv('GOOGLE_CSE_ID')
         
         if not self.api_key or not self.cse_id:
-            raise ValueError("GOOGLE_API_KEY and GOOGLE_CSE_ID are required")
+            raise ValueError("GOOGLE_API_KEY and GOOGLE_SEARCH_ENGINE_ID (or GOOGLE_CSE_ID) are required")
         
         try:
             self.service = build("customsearch", "v1", developerKey=self.api_key)
@@ -69,11 +70,11 @@ class GoogleSearchClient:
         language: str = 'en'
     ) -> Dict[str, Any]:
         """
-        Perform search using Google Custom Search API.
+        Perform search using Google Custom Search API with pagination support.
         
         Args:
             query: Search query
-            max_results: Maximum results (max 10 per request)
+            max_results: Maximum results (can be > 10 through pagination)
             safe_search: Enable safe search
             date_restrict: Date restriction (d[number], w[number], m[number], y[number])
             site_search: Restrict to specific site
@@ -81,38 +82,58 @@ class GoogleSearchClient:
             language: Language code (en, es, fr, etc.)
             
         Returns:
-            Normalized search results
+            Normalized search results with multiple pages if needed
         """
         self.stats['total_requests'] += 1
         
         try:
-            # Google CSE allows max 10 results per request
-            num_results = min(max_results, 10)
+            all_results = []
+            results_per_page = 10  # Google CSE returns 10 results per request
             
-            # Build search parameters
-            params = {
-                'q': query,
-                'cx': self.cse_id,
-                'num': num_results,
-                'safe': 'active' if safe_search else 'off',
-                'lr': f'lang_{language}'
-            }
+            # Calculate number of pages needed
+            num_pages = (max_results + 9) // 10  # Round up
             
-            # Add optional filters
-            if date_restrict:
-                params['dateRestrict'] = date_restrict
-            if site_search:
-                params['siteSearch'] = site_search
-            if file_type:
-                params['fileType'] = file_type
+            # Fetch multiple pages if needed
+            for page in range(num_pages):
+                start_index = page * results_per_page + 1  # Google uses 1-based indexing
+                
+                # Build search parameters
+                params = {
+                    'q': query,
+                    'cx': self.cse_id,
+                    'num': 10,  # Always request 10 per page
+                    'start': start_index,  # Google's pagination parameter
+                    'safe': 'active' if safe_search else 'off',
+                    'lr': f'lang_{language}'
+                }
+                
+                # Add optional filters
+                if date_restrict:
+                    params['dateRestrict'] = date_restrict
+                if site_search:
+                    params['siteSearch'] = site_search
+                if file_type:
+                    params['fileType'] = file_type
+                
+                logger.info(f"Executing Google search: query='{query}', page={page+1}")
+                
+                # Execute search
+                result = self.service.cse().list(**params).execute()
+                
+                # Check if we got any results
+                items = result.get('items', [])
+                if not items:
+                    break  # No more results available
+                
+                all_results.extend(items)
+                
+                # Stop if we have enough results
+                if len(all_results) >= max_results:
+                    all_results = all_results[:max_results]
+                    break
             
-            logger.info(f"Executing Google search: query='{query}'")
-            
-            # Execute search
-            result = self.service.cse().list(**params).execute()
-            
-            # Normalize results
-            normalized = self._normalize_results(result, query)
+            # Normalize results (using combined results)
+            normalized = self._normalize_results_paginated(result, query, all_results)
             
             self.stats['successful_requests'] += 1
             self.stats['total_results_returned'] += len(normalized['organic_results'])
@@ -149,6 +170,20 @@ class GoogleSearchClient:
         Returns:
             Normalized results dictionary
         """
+        return self._normalize_results_paginated(raw_results, query, raw_results.get('items', []))
+    
+    def _normalize_results_paginated(self, raw_results: Dict, query: str, items: List[Dict]) -> Dict[str, Any]:
+        """
+        Normalize Google results to match internal format.
+        
+        Args:
+            raw_results: Raw results from Google API
+            query: Original query
+            items: List of items from all pages
+            
+        Returns:
+            Normalized results dictionary
+        """
         normalized = {
             'query': query,
             'organic_results': [],
@@ -168,8 +203,7 @@ class GoogleSearchClient:
         normalized['metadata']['total_results'] = int(search_info.get('totalResults', 0))
         normalized['metadata']['search_time'] = float(search_info.get('searchTime', 0))
         
-        # Process organic results
-        items = raw_results.get('items', [])
+        # Process organic results from all pages
         for i, item in enumerate(items):
             result = {
                 'title': item.get('title', ''),

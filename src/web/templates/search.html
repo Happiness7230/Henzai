@@ -43,18 +43,22 @@
                     <button type="button" id="voiceBtn" class="voice-btn icon-btn" aria-label="Voice search">
                         <i class="fas fa-microphone"></i>
                     </button>
+                    <div class="tim-edit">
+                     <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> </button>
+                </div>
                 </div>
                 <div id="autocomplete" class="autocomplete hidden"></div>
 
                 <div class="search-buttons">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i>
-                        <span>Search</span>
-                    </button>
-                    <button type="button" id="luckyBtn" class="btn btn-secondary">
-                        <i class="fas fa-bolt"></i>
-                        <span>I'm Feeling Lucky</span>
-                    </button>
+                    <a href="{{ url_for('marketplace_page') }}" class="btn btn-primary" style="text-decoration: none;">
+                      <i class="fas fa-shopping-cart"></i>
+                      <span>Marketplace</span>
+                    </a>
+                    <a href="{{ url_for('jobs_page') }}" class="btn btn-primary" style="text-decoration: none;">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Job Search</span>
+                    </a>
                 </div>
             </form>
         </div>
@@ -74,6 +78,54 @@
                     <i class="fas fa-globe"></i>
                     <span>Web</span>
                 </button>
+                <!-- Google mode (uses Google Custom Search when configured) -->
+                <button type="button" class="mode-btn" data-mode="google">
+                    <i class="fab fa-google"></i>
+                    <span>Google</span>
+                </button>
+            </div>
+        </section>
+
+        <section>
+            <div class="body">
+                <div class="social-container">
+                    <ul class="social-links">
+                        <li class="link-item">
+                            <a href="https://www.linkedin.com/" target="_self" class="social-link" id="linkedin-link">
+                                <i class="fab fa-linkedin"></i>
+                                <span class="link-name">LinkedIn</span>
+                            </a>
+                        </li>
+
+                        <li class="link-item">
+                            <a href="https://www.youtube.com/" target="_self" class="social-link" id="youtube-link">
+                                <i class="fab fa-youtube"></i>
+                                <span class="link-name">YouTube</span>
+                            </a>
+                        </li>
+
+                        <li class="link-item">
+                            <a href="https://www.facebook.com/" target="_self" class="social-link" id="facebook-link">
+                                <i class="fab fa-facebook"></i>
+                                <span class="link-name">Facebook</span>
+                            </a>
+                        </li>
+
+                        <li class="link-item">
+                            <a href="https://www.gmail.com/" target="_self" class="social-link" id="gmail-link">
+                                <i class="fas fa-envelope"></i>
+                                <span class="link-name">Gmail</span>
+                            </a>
+                        </li>
+
+                        <li class="link-item">
+                            <a href="https://www.instagram.com/" target="_self" class="social-link" id="instagram-link">
+                                <i class="fab fa-instagram"></i>
+                                <span class="link-name">Instagram</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </section>
 

@@ -244,6 +244,11 @@
     margin-bottom: var(--spacing-xs);
 }
 
+.result-nav
+{
+    display: flex;
+}
+
 .result-favicon {
     width: 20px;
     height: 20px;

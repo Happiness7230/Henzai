@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Aggregator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="steinmarket.css">
+    <style>
+        /* All CSS Variables Provided by the User */
+:root {
+    /* Colors - Light Mode */
+    --primary-color: #4285f4;
+    --secondary-color: #34a853;
+    --danger-color: #ea4335;
+    --warning-color: #fbbc04;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --border-color: #dfe1e5;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-hover: #f1f3f4;
+    --shadow-sm: 0 1px 6px rgba(32, 33, 36, 0.1);
+    --shadow-md: 0 2px 8px rgba(32, 33, 36, 0.15);
+    --shadow-lg: 0 4px 16px rgba(32, 33, 36, 0.2);
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-sm: 13px;
+    --font-size-base: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
+    --font-size-xl: 28px;
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+/* Base Styles */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------------- */
+/* HEADER & SEARCH BAR                                              */
+/* ---------------------------------------------------------------- */
+
+.main-header {
+    display: grid;
+    /* Defines three columns: logo (left), search (center), placeholder (right) */
+    grid-template-columns: 1fr 2fr 1fr; 
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-xl);
+    background-color: var(--bg-primary);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-logo h1 {
+    font-size: var(--font-size-lg);
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#product-search {
+    flex-grow: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-radius: var(--radius-full) 0 0 var(--radius-full);
+    font-size: var(--font-size-base);
+    transition: box-shadow var(--transition-fast);
+}
+
+#product-search:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+#search-button {
+    background-color: var(--primary-color);
+    color: var(--bg-primary);
+    border: 1px solid var(--primary-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    transition: background-color var(--transition-fast);
+}
+
+#search-button:hover {
+    background-color: #3b7ad7; /* Slightly darker primary color */
+}
+
+/* ---------------------------------------------------------------- */
+/* MARKETPLACE GRID & ADS                                           */
+/* ---------------------------------------------------------------- */
+
+.marketplace-grid {
+    display: grid;
+    /* 3 columns on larger screens */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    max-width: 1400px;
+    margin: var(--spacing-xl) auto;
+}
+
+.marketplace-item {
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.marketplace-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Ad Mockup Styling (for the soundless ad area) */
+.ad-mockup {
+    position: relative;
+    height: 200px;
+    background-color: #ccc; /* Placeholder background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--bg-primary);
+    text-align: center;
+}
+
+.ad-content {
+    font-size: var(--font-size-lg);
+    font-weight: bold;
+}
+
+.ad-label {
+    position: absolute;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--bg-primary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    z-index: 10;
+}
+
+.ad-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Dark overlay */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ad-overlay h2 {
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-xl);
+}
+
+/* Call To Action Button */
+.marketplace-cta {
+    display: block;
+    text-align: center;
+    padding: var(--spacing-md);
+    background-color: var(--secondary-color);
+    color: var(--bg-primary);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: var(--font-size-md);
+    transition: background-color var(--transition-fast);
+}
+
+.marketplace-cta:hover {
+    background-color: #2b8443; /* Slightly darker secondary color */
+}
+
+/* Specific Placeholder Colors for visual distinction */
+#jumia-section .ad-mockup { background-color: #f7a905; }
+#amazon-section .ad-mockup { background-color: #232f3e; }
+#jiji-section .ad-mockup { background-color: #8cc43c; }
+#ebay-section .ad-mockup { background-color: #e53238; }
+#aliexpress-section .ad-mockup { background-color: #e94b2a; }
+#etsy-section .ad-mockup { background-color: #f6723e; }
+
+/* Media Query for smaller screens (e.g., tablets/mobiles) */
+@media (max-width: 900px) {
+    .marketplace-grid {
+        grid-template-columns: 1fr 1fr; /* 2 columns on medium screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .main-header {
+        grid-template-columns: 1fr; /* Stack on small screens */
+        padding: var(--spacing-md);
+    }
+    .header-logo {
+        text-align: center;
+        margin-bottom: var(--spacing-md);
+    }
+    .marketplace-grid {
+        grid-template-columns: 1fr; /* 1 column on mobile */
+        padding: var(--spacing-md);
+    }
+}
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-logo">
+            <h1>Marketplace</h1>
+        </div>
+        <div class="search-container">
+            <input type="search" id="product-search" placeholder="Search across all 6 marketplaces...">
+            <button id="search-button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="header-placeholder"></div>
+    </header>
+
+    <main class="marketplace-grid">
+        <section class="marketplace-item" id="jumia-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: JUMIA HOT DEALS 🔥</span>
+                <div class="ad-content">Placeholder for Jumia Soundless Ad</div>
+                <div class="ad-overlay">
+                    <h2>JUMIA</h2>
+                    <p>Find the biggest deals in Africa!</p>
+                </div>
+            </div>
+            <a href="https://www.jumia.com.ng/" target="_blank" class="marketplace-cta" data-name="Jumia">Visit Jumia</a>
+        </section>
+
+        <section class="marketplace-item" id="amazon-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: AMAZON PRIME OFFERS ⚡</span>
+                <div class="ad-content">Placeholder for Amazon Soundless Ad</div>
+                <div class="ad-overlay">
+                    <h2>AMAZON</h2>
+                    <p>Everything delivered fast.</p>
+                </div>
+            </div>
+            <a href="https://www.amazon.com/" target="_blank" class="marketplace-cta" data-name="Amazon">Visit Amazon</a>
+        </section>
+
+        <section class="marketplace-item" id="jiji-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: JIJI LOCAL FINDS 🏡</span>
+                <div class="ad-content">Placeholder for Jiji Soundless Ad</div>
+                <div class="ad-overlay">
+                    <h2>JIJI</h2>
+                    <p>Buy & Sell Locally.</p>
+                </div>
+            </div>
+            <a href="https://jiji.ng/" target="_blank" class="marketplace-cta" data-name="Jiji">Visit Jiji</a>
+        </section>
+
+        <section class="marketplace-item" id="ebay-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: EBAY AUCTIONS  bidding 🔔</span>
+                <div class="ad-content">Placeholder for eBay Ad</div>
+                <div class="ad-overlay">
+                    <h2>EBAY</h2>
+                    <p>Unique items and auctions.</p>
+                </div>
+            </div>
+            <a href="https://www.ebay.com/" target="_blank" class="marketplace-cta" data-name="eBay">Visit eBay</a>
+        </section>
+
+        <section class="marketplace-item" id="aliexpress-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: ALIEXPRESS GLOBAL SALE 🌐</span>
+                <div class="ad-content">Placeholder for AliExpress Ad</div>
+                <div class="ad-overlay">
+                    <h2>ALIEXPRESS</h2>
+                    <p>Global low prices.</p>
+                </div>
+            </div>
+            <a href="https://www.aliexpress.com/" target="_blank" class="marketplace-cta" data-name="AliExpress">Visit AliExpress</a>
+        </section>
+
+        <section class="marketplace-item" id="etsy-section">
+            <div class="ad-mockup">
+                <span class="ad-label">AD: ETSY HANDMADE CRAFTS 🎁</span>
+                <div class="ad-content">Placeholder for Etsy Ad</div>
+                <div class="ad-overlay">
+                    <h2>ETSY</h2>
+                    <p>Handmade and vintage.</p>
+                </div>
+            </div>
+            <a href="https://www.etsy.com/" target="_blank" class="marketplace-cta" data-name="Etsy">Visit Etsy</a>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

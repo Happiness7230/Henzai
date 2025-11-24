@@ -72,43 +72,64 @@ class SerpAPIClient:
         time_period: Optional[str] = None  # 'd' (day), 'w' (week), 'm' (month), 'y' (year)
     ) -> Dict[str, Any]:
         """
-        Perform web search using SerpAPI.
+        Perform web search using SerpAPI with pagination support.
         
         Args:
             query: Search query string
-            max_results: Maximum number of results to return
+            max_results: Maximum number of results to return (supports up to 20+)
             safe_search: Enable safe search filtering
             region: Region code (e.g., 'us-en', 'uk-en')
             time_period: Time filter for results
             
         Returns:
-            Normalized search results dictionary
+            Normalized search results dictionary with up to max_results
         """
         self.stats['total_requests'] += 1
         
         try:
-            params = {
-                **self.base_params,
-                'q': query,
-                'kl': region,
-                'safe': '1' if safe_search else '-1'
-            }
+            all_results = []
+            results_per_page = 10  # SerpAPI returns 10 results per request
+            num_pages = (max_results + 9) // 10  # Round up to get enough pages
             
-            if time_period:
-                params['df'] = time_period
-            
-            logger.info(f"Executing SerpAPI search: query='{query}', region={region}")
-            
-            search = GoogleSearch(params)
-            results = search.get_dict()
-            
-            # Check for errors
-            if 'error' in results:
-                self.stats['failed_requests'] += 1
-                raise SerpAPIException(f"SerpAPI error: {results['error']}")
+            # Fetch multiple pages if needed to reach max_results
+            for page in range(num_pages):
+                start = page * results_per_page
+                
+                params = {
+                    **self.base_params,
+                    'q': query,
+                    'kl': region,
+                    'safe': '1' if safe_search else '-1',
+                    'start': start  # SerpAPI pagination parameter
+                }
+                
+                if time_period:
+                    params['df'] = time_period
+                
+                logger.info(f"Executing SerpAPI search: query='{query}', page={page+1}, region={region}")
+                
+                search = GoogleSearch(params)
+                results = search.get_dict()
+                
+                # Check for errors
+                if 'error' in results:
+                    self.stats['failed_requests'] += 1
+                    raise SerpAPIException(f"SerpAPI error: {results['error']}")
+                
+                # Get organic results from this page
+                page_results = results.get('organic_results', [])
+                if not page_results:
+                    break  # No more results available
+                
+                all_results.extend(page_results)
+                
+                # Stop if we have enough results
+                if len(all_results) >= max_results:
+                    all_results = all_results[:max_results]
+                    break
             
             # Normalize and structure the response
-            normalized = self._normalize_results(results, max_results)
+            normalized = self._normalize_results({'organic_results': all_results}, max_results)
             
             self.stats['successful_requests'] += 1
             self.stats['total_results_returned'] += len(normalized['organic_results'])

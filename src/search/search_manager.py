@@ -21,11 +21,19 @@ class SearchManager:
     
     def __init__(
         self,
+        google_client=None,
         local_ranker=None,
         serpapi_client=None,
         cache_manager=None,
-        mode: str = 'hybrid'
+        mode: str = "hybrid",
     ):
+        self.google_client = google_client
+        self.local_ranker = local_ranker
+        self.serp_client = serpapi_client
+        self.cache_manager = cache_manager
+        # default search mode
+        self.mode = mode
+
         """
         Initialize Search Manager.
         
@@ -33,13 +41,14 @@ class SearchManager:
             local_ranker: Local ranking engine instance
             serpapi_client: SerpAPI client instance
             cache_manager: Cache manager instance
-            mode: Search mode ('local', 'serpapi', 'hybrid')
+            mode: Search mode ('local', 'serpapi','google', 'hybrid')
         """
+        self.google_client = google_client
         self.local_ranker = local_ranker
         self.serpapi_client = serpapi_client
         self.cache_manager = cache_manager
-        self.mode = mode or os.getenv('SEARCH_MODE', 'hybrid')
-        
+        self.mode = mode 
+
         # Configuration
         self.blend_ratio = float(os.getenv('HYBRID_BLEND_RATIO', 0.5))
         self.local_boost = float(os.getenv('HYBRID_LOCAL_BOOST', 1.2))
@@ -61,7 +70,7 @@ class SearchManager:
     def search(
         self,
         query: str,
-        max_results: int = 10,
+        max_results: int = None,
         filters: Optional[Dict] = None,
         **kwargs
     ) -> Dict[str, Any]:
@@ -77,6 +86,10 @@ class SearchManager:
         Returns:
             Unified search results dictionary
         """
+        if max_results is None:
+            from src.config.config import Config
+            max_results = Config.DEFAULT_MAX_RESULTS
+
         start_time = datetime.now()
         self.stats['total_searches'] += 1
         
@@ -98,6 +111,10 @@ class SearchManager:
             elif self.mode == 'serpapi':
                 results = self._search_api(query, max_results, filters, **kwargs)
                 self.stats['api_searches'] += 1
+            
+            elif self.mode == 'google':
+                results = self._search_google(query, max_results, filters, **kwargs)
+                self.stats['google_searches'] += 1
                 
             elif self.mode == 'hybrid':
                 results = self._search_hybrid(query, max_results, filters, **kwargs)
@@ -144,8 +161,8 @@ class SearchManager:
         
         logger.debug(f"Performing local search: '{query}'")
         
-        # Execute local search
-        local_results = self.local_ranker.rank(query, max_results, filters)
+        # Execute local search (rank() only accepts query and top_k)
+        local_results = self.local_ranker.rank(query, top_k=max_results)
         
         return {
             'query': query,
@@ -167,7 +184,6 @@ class SearchManager:
         """Search using SerpAPI only."""
         if not self.serpapi_client:
             raise ValueError("SerpAPI client not configured")
-        
         logger.debug(f"Performing API search: '{query}'")
         
         # Execute API search
@@ -232,6 +248,15 @@ class SearchManager:
                 except Exception as e:
                     logger.warning(f"{source} search failed in hybrid mode: {str(e)}")
         
+        # If both sources failed to produce results, try a direct local fallback
+        if (not local_results or len(local_results) == 0) and self.local_ranker:
+            try:
+                logger.debug("Hybrid: local results empty, attempting direct local fallback")
+                local_fallback = self._search_local(query, max_results, filters)
+                local_results = local_fallback.get('results', []) or []
+            except Exception as e:
+                logger.warning(f"Local fallback failed in hybrid mode: {str(e)}")
+
         # Blend results
         blended = self._blend_results(
             local_results,
@@ -253,6 +278,11 @@ class SearchManager:
                 'blended_count': len(blended)
             }
         }
+    def _google_search(self, query: str) -> List[dict]:
+        """Google Custom Search only."""
+        if not self.google_client:
+            return []
+        return self.google_client.search(query)
     
     def _blend_results(
         self,
@@ -310,21 +340,56 @@ class SearchManager:
         # Sort by score
         scored_results.sort(key=lambda x: x['score'], reverse=True)
         
+        # Guard max_results
+        try:
+            m = int(max_results) if max_results else None
+        except Exception:
+            m = None
+
+        if not m or m <= 0:
+            # Respect a sane default
+            from src.config.config import Config
+            m = getattr(Config, 'DEFAULT_MAX_RESULTS', 10)
+
         # Return top results
-        return scored_results[:max_results]
+        return scored_results[:m]
     
     def _normalize_local_results(self, results: List[Dict]) -> List[Dict]:
         """Normalize local results to match API format."""
         normalized = []
         for result in results:
-            normalized.append({
-                'title': result.get('title', 'Untitled'),
-                'url': result.get('url', ''),
-                'snippet': result.get('snippet', ''),
-                'domain': self._extract_domain(result.get('url', '')),
-                'score': result.get('score', 0),
-                'source': 'local'
-            })
+            # Support two local result formats:
+            # 1) dict-like results with keys (title, url, snippet, score)
+            # 2) tuple/list results from rankers: (doc_id, score)
+            if isinstance(result, (list, tuple)) and len(result) >= 2:
+                doc_id, score = result[0], result[1]
+                normalized.append({
+                    'title': str(doc_id),
+                    'url': str(doc_id),
+                    'snippet': '',
+                    'domain': self._extract_domain(str(doc_id)),
+                    'score': float(score),
+                    'source': 'local'
+                })
+            elif isinstance(result, dict):
+                normalized.append({
+                    'title': result.get('title', 'Untitled'),
+                    'url': result.get('url', ''),
+                    'snippet': result.get('snippet', ''),
+                    'domain': self._extract_domain(result.get('url', '')),
+                    'score': result.get('score', 0),
+                    'source': 'local'
+                })
+            else:
+                # Fallback: stringify the result
+                normalized.append({
+                    'title': str(result),
+                    'url': str(result),
+                    'snippet': '',
+                    'domain': self._extract_domain(str(result)),
+                    'score': 0,
+                    'source': 'local'
+                })
         return normalized
     
     def get_suggestions(self, query: str, max_suggestions: int = 10) -> List[str]:
@@ -339,8 +404,15 @@ class SearchManager:
                 if suggestions:
                     return suggestions
             except Exception as e:
-                logger.warning(f"API suggestions failed: {str(e)}")
+                logger.warning(f"API suggestions failed: {str(e)}"),
         
+        if self.google_client and self.mode in ['serpapi', 'google', 'hybrid']:
+            try:
+                suggestions = self.google_client.get_suggestions(query, max_suggestions)
+                if suggestions:
+                    return suggestions
+            except Exception as e:
+                logger.warning(f"API suggestions failed: {str(e)}")
         # Fallback to local suggestions (could be implemented)
         # For now, return empty list
         return []
@@ -355,7 +427,8 @@ class SearchManager:
         Returns:
             True if mode changed successfully
         """
-        valid_modes = ['local', 'serpapi', 'hybrid']
+        # Ensure valid modes list includes the expected separators
+        valid_modes = ['local', 'serpapi', 'google', 'hybrid']
         if mode not in valid_modes:
             logger.error(f"Invalid mode: {mode}")
             return False
@@ -416,6 +489,34 @@ class SearchManager:
                 'timestamp': datetime.now().isoformat()
             }
         }
+    def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
+        """
+        Search with automatic fallback between Google and SerpAPI.
+        """
+        from src.config.config import Config
+        from src.external.google_search_client import GoogleSearchException
+        
+        primary = Config.PRIMARY_SEARCH_ENGINE
+        fallback = Config.FALLBACK_SEARCH_ENGINE
+
+        try:
+            if primary == 'google' and self.google_client:
+                return self._search_google(query, **kwargs)
+            elif primary == 'serpapi' and self.serpapi_client:
+                return self._search_api(query, **kwargs)
+        except (GoogleSearchException, Exception):
+            logger.warning(f"Primary search engine failed, switching to fallback: {fallback}")
+
+            try:
+                if fallback == 'google' and self.google_client:
+                    return self._search_google(query, **kwargs)
+                elif fallback == 'serpapi' and self.serpapi_client:
+                    return self._search_api(query, **kwargs)
+            except Exception:
+                logger.error("Fallback search failed")
+
+        return self._empty_results(query, "All search engines failed")
+
     
 def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
     """
@@ -454,6 +555,9 @@ def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
 
 def _search_google(self, query: str, **kwargs) -> Dict[str, Any]:
     """Search using Google Custom Search API"""
+    time_period = kwargs.get("time_period")
+    converted = self._convert_time_period(time_period)
+    
     if not self.google_client:
         raise ValueError("Google client not configured")
     
