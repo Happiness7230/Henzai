@@ -34,9 +34,18 @@
 
 /* Logo */
 .logo-container {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: -40px;
     animation: fadeInDown 0.6s ease;
+    
 }
+
+.logo {
+    width: 150px;
+    height: auto;
+}
+
+/* Container to manage absolute positioning of children */
+
 
 @keyframes fadeInDown {
     from {
@@ -49,11 +58,6 @@
     }
 }
 
-.logo {
-    width: 300px;
-    height: auto;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
 
 /* Search Box Container */
 .search-box-container {
@@ -106,6 +110,10 @@
     margin-right: 12px;
 }
 
+.search-icon:hover {
+    translate: translateY(-4px);
+}
+
 .search-input {
     flex: 1;
     border: none;
@@ -135,6 +143,7 @@
 .voice-btn:hover {
     background-color: var(--bg-hover);
     color: var(--text-primary);
+    translate: translateY(-4px);
 }
 
 .clear-btn {
@@ -147,6 +156,7 @@
 
 .voice-btn:hover {
     background-color: rgba(66, 133, 244, 0.1);
+    translate: translateY(-4px);
 }
 
 .voice-btn.listening {
@@ -509,4 +519,69 @@
 
 #gmail-link:hover {
     color: #D14836; /* Gmail Red */
+}
+
+/* 1. Main Container (removes default CSE padding/border) */
+.gsc-control-cse {
+    padding: 0; 
+    border: none;
+    box-shadow: none;
+    width: 100%;
+}
+
+/* 2. Hide Google Branding (optional, but common for custom design) */
+.gsc-branding {
+    display: none !important;
+}
+
+/* 3. Result Title (Link Color and Weight) */
+.gs-title a, .gs-title a:hover, .gs-title a:active {
+    /* Use your brand's blue/link color */
+    color: #1A0DAB !important; 
+    font-weight: 600; 
+    text-decoration: none;
+}
+.gs-title a:hover {
+    /* Darken link on hover */
+    color: #551A8B !important; 
+    text-decoration: underline;
+}
+
+/* 4. Background Color (Set the main results area background) */
+.gsc-results-wrapper-overlay, 
+.gsc-resultsRoot { 
+    /* Set to a light gray or white */
+    background-color: #F9F9F9; 
+}
+.gsc-webResult, 
+.gsc-result { 
+    /* Ensure individual results have no background/border to blend in */
+    background-color: transparent !important; 
+    border: none !important; 
+}
+
+/* 5. Snippet/Description Text */
+.gs-snippet {
+    color: #444444; /* Dark gray for body text */
+    line-height: 1.5;
+}
+
+/* 6. URL/Breadcrumb Text Color */
+.gs-visibleUrl {
+    color: #006400; /* Dark green */
+}
+
+/* 7. Pagination Buttons */
+.gsc-cursor-page {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 5px 10px;
+    margin: 0 4px;
+    border-radius: 4px;
+}
+.gsc-cursor-current-page {
+    background-color: var(--primary-color) !important; /* Uses your site's primary color */
+    border-color: var(--primary-color) !important;
+    color: white !important;
 }

@@ -184,7 +184,8 @@ def main() -> None:
         app.run(
             host=Config.WEB_HOST,
             port=Config.WEB_PORT,
-            debug=Config.WEB_DEBUG
+            debug=False,
+            use_reloader=False
         )
         
     except KeyboardInterrupt:

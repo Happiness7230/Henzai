@@ -10,9 +10,9 @@
 <div class="results-page">
     <header class="results-header">
         <div class="header-left">
-            <a href="{{ url_for('index') }}" class="logo-link" aria-label="Go to search">
-                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="logo-small" onerror="this.style.display='none'">
-            </a>
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/result.png') }}" alt="Logo" class="logo-small">
+            </div>
             <form id="searchForm" class="header-search-form" autocomplete="off">
                 <div class="header-search-box">
                     <input id="searchInput" type="text" class="header-search-input" placeholder="Search the web or your indexed content" aria-label="Search query" value="{{ query or '' }}">
@@ -31,23 +31,6 @@
             </button>
         </div>
     </header>
-
-    <nav class="results-nav" aria-label="Result types">
-        <div class="tabs">
-            <button class="tab active" data-tab="web">
-                <i class="fas fa-search"></i>
-                <span>All</span>
-            </button>
-            <button class="tab" data-tab="news">
-                <i class="fas fa-newspaper"></i>
-                <span>News</span>
-            </button>
-            <button class="tab" data-tab="images">
-                <i class="fas fa-image"></i>
-                <span>Images</span>
-            </button>
-    </div>
-    </nav>
 
     <div class="results-content">
         <aside class="filters-panel" aria-label="Search filters">

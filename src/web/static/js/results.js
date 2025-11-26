@@ -89,6 +89,18 @@ async function performSearch() {
 }
 
 function displayResults(data) {
+    // Defensive checks: ensure we have a valid results object
+    try {
+        if (!data || typeof data !== 'object') {
+            console.error('displayResults: invalid data', data);
+            displayError();
+            return;
+        }
+    } catch (e) {
+        console.error('displayResults: unexpected error validating data', e);
+        displayError();
+        return;
+    }
     // Update search info
     const searchInfo = document.getElementById('searchInfo');
     const resultCount = data.total || 0;
@@ -132,7 +144,7 @@ function displayResults(data) {
     const resultsList = document.getElementById('resultsList');
     resultsList.innerHTML = '';
     
-    if (data.results && data.results.length > 0) {
+    if (Array.isArray(data.results) && data.results.length > 0) {
         data.results.forEach(result => {
             resultsList.appendChild(createResultItem(result));
         });

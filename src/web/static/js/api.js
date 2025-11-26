@@ -3,7 +3,8 @@
  * Handles all API requests to the backend
  */
 
-const API = {
+if (typeof API === 'undefined') {
+    const API = {
     baseUrl: window.location.origin,
     
     /**
@@ -146,3 +147,4 @@ const API = {
 
 // Export for use in other scripts
 window.API = API;
+}

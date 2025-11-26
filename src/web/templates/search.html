@@ -21,12 +21,11 @@
 
     <main class="search-main">
         <div class="logo-container">
-            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Search Engine Logo" class="logo" onerror="this.style.display='none'">
-            <h1 class="logo-text">Hybrid Search</h1>
+            <img src="{{ url_for('static', filename='images/stein.png') }}" alt="Barbie Search Engine Logo" class="logo spider-stein" onerror="this.style.display='none'">
         </div>
 
         <div class="search-box-container">
-            <form id="searchForm" class="search-form" autocomplete="off">
+            <form id="searchForm" class="search-form" autocomplete="on">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
                     <input
@@ -63,6 +62,10 @@
             </form>
         </div>
 
+    
+
+       <!----- <div class="gcse-search" style="display: none"></div>----->
+
         <section class="search-mode" aria-label="Search mode selector">
             <label for="modeButtons">Search mode</label>
             <div id="modeButtons" class="mode-buttons">
@@ -79,9 +82,10 @@
                     <span>Web</span>
                 </button>
                 <!-- Google mode (uses Google Custom Search when configured) -->
-                <button type="button" class="mode-btn" data-mode="google">
-                    <i class="fab fa-google"></i>
-                    <span>Google</span>
+                <button type="button" class="mode-btn" data-mode="google">                   
+                     <i class="fab fa-google">
+                        <span>Google</span>
+                    </i>
                 </button>
             </div>
         </section>
@@ -143,6 +147,7 @@
                 <span id="cacheHitRate">0% cache hit</span>
             </div>
         </section>
+        <div class="gcse-searchresults-only" style="display: none;"></div>
     </main>
 
     <footer class="search-footer">
@@ -153,7 +158,7 @@
             <a href="#" onclick="return false;">Support</a>
         </div>
         <div class="footer-info">
-            Built with ❤️ for hybrid search experiences.
+            Built with ❤️ for Sir Albert Einstein.
         </div>
     </footer>
 </div>
@@ -175,6 +180,18 @@
             </section>
 
             <section class="setting-group">
+                <h3>Results Per Page</h3>
+                <p>Choose how many results to display on each search results page.</p>
+                <select id="maxResultsSelect" class="select-input">
+                    <option value="10">10 results</option>
+                    <option value="20" selected>20 results</option>
+                    <option value="30">30 results</option>
+                    <option value="50">50 results</option>
+                    <option value="100">100 results</option>
+                </select>
+            </section>
+
+            <section class="setting-group">
                 <h3>Cache</h3>
                 <p>Clear cached search results if you need a fresh crawl or updated ranking.</p>
                 <button id="modalClearCache" class="btn btn-outline">
@@ -193,7 +210,56 @@
 {% endblock %}
 
 {% block extra_js %}
+<!---<script async src="https://cse.google.com/cse.js?cx=11e9076d1c6514c16">
+</script>---->
+<script async src="https://cse.google.com/cse.js?cx=11e9076d1c6514c16">
+</script>
 <script>
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const googleElement = document.querySelector('.gcse-search'); 
+
+    // Ensure the Google element is hidden initially (this is a backup to CSS/inline style)
+    if (googleElement) {
+        googleElement.style.display = 'none';
+    }
+
+    function switchSearchMode(selectedMode) {
+        // 1. Update active button state
+        modeButtons.forEach(btn => {
+            if (btn.getAttribute('data-mode') === selectedMode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // 2. Control visibility of the Google search element
+        if (googleElement) {
+            if (selectedMode === 'google') {
+                googleElement.style.display = 'block'; 
+            } else {
+                googleElement.style.display = 'none';
+            }
+        }
+        
+        console.log(`Switched to mode: ${selectedMode}`);
+        // *** Your existing search function (in search.js) would be called here ***
+        // For example: runSearch(document.getElementById('searchInput').value, selectedMode);
+    }
+
+    // Add click listeners to all mode buttons
+    modeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // Check for the data-mode attribute on the button itself or its parent
+            let mode = button.getAttribute('data-mode');
+            if (!mode) {
+                // In case the click hit the <a> or <i> inside, find the mode-btn parent
+                mode = button.closest('.mode-btn').getAttribute('data-mode');
+            }
+            switchSearchMode(mode);
+        });
+    });
+
 document.addEventListener('DOMContentLoaded', () => {
     const modalClear = document.getElementById('modalClearCache');
     const headerClear = document.getElementById('clearCache');

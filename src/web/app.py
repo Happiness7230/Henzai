@@ -417,7 +417,7 @@ def api_search():
                 'status': 'error'
             }), 400
         
-        max_results = int(data.get('max_results', 100))
+        max_results = int(data.get('max_results', 70))
         mode_override = data.get('mode')
         safe_search = data.get('safe_search', 'true').lower() == 'true'
         region = data.get('region', 'wt-wt')
@@ -568,6 +568,7 @@ def api_search_news():
             'status': 'error',
             'error': str(e)
         }), 500
+    
 
 
 @app.route('/api/search/images', methods=['GET'])
@@ -1176,15 +1177,33 @@ def api_job_search():
                 'error': 'Query parameter "q" is required'
             }), 400
         
+        # Parse boolean/typed parameters robustly (accept JSON booleans or strings)
+        raw_remote = data.get('remote_only', False)
+        if isinstance(raw_remote, str):
+            remote_only = raw_remote.lower() == 'true'
+        else:
+            remote_only = bool(raw_remote)
+
+        min_salary = int(data['min_salary']) if data.get('min_salary') else None
+
+        # sources may be provided as a comma-separated string (GET) or a list (POST)
+        raw_sources = data.get('sources')
+        if isinstance(raw_sources, str):
+            sources = [s.strip() for s in raw_sources.split(',') if s.strip()]
+        elif isinstance(raw_sources, list):
+            sources = raw_sources
+        else:
+            sources = None
+
         results = job_search_client.search_jobs(
             query=query,
             location=data.get('location', ''),
             max_results=int(data.get('max_results', 20)),
-            remote_only=data.get('remote_only', 'false').lower() == 'true',
-            min_salary=int(data['min_salary']) if data.get('min_salary') else None,
+            remote_only=remote_only,
+            min_salary=min_salary,
             experience_level=data.get('experience_level'),
             job_type=data.get('job_type'),
-            sources=data.get('sources', '').split(',') if data.get('sources') else None
+            sources=sources
         )
         
         return jsonify({
@@ -1239,7 +1258,7 @@ def api_job_alerts():
                 user_email=data['email'],
                 keywords=data['keywords'],
                 location=data['location'],
-                remote_only=data.get('remote_only', False),
+                remote_only = str(data.get('remote_only', False)).lower() == 'true',
                 min_salary=int(data['min_salary']) if data.get('min_salary') else None
             )
             

@@ -1,0 +1,38 @@
+{
+  "alerts": {
+    "4e894971-f518-4e91-bd02-3b975927e5b5": {
+      "id": "4e894971-f518-4e91-bd02-3b975927e5b5",
+      "user_email": "obochihappiness180@gmail.com",
+      "product_name": "shoe - Deluxe Package",
+      "product_url": "https://example.com/product3",
+      "marketplace": "walmart",
+      "target_price": 149.99,
+      "current_price": 149.99,
+      "created_at": "2025-11-26T11:19:01.950884",
+      "is_active": true,
+      "last_checked": null,
+      "alert_sent": false
+    },
+    "7c0ae41f-51f8-4f7a-af3c-70ca808bfcb0": {
+      "id": "7c0ae41f-51f8-4f7a-af3c-70ca808bfcb0",
+      "user_email": "obochihappiness180@gmail.com",
+      "product_name": "shoe - Deluxe Package",
+      "product_url": "https://example.com/product3",
+      "marketplace": "walmart",
+      "target_price": 99.99,
+      "current_price": 149.99,
+      "created_at": "2025-11-26T11:19:35.295401",
+      "is_active": true,
+      "last_checked": null,
+      "alert_sent": false
+    }
+  },
+  "price_history": {
+    "4e894971-f518-4e91-bd02-3b975927e5b5": [
+      {
+        "price": 149.99,
+        "timestamp": "2025-11-26T11:19:01.959382"
+      }
+    ]
+  }
+}

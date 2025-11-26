@@ -1,167 +1,158 @@
-# Search Engine
+Search Engine — Hybrid Web & Local Indexed Search
+📌 Overview
 
-A concurrent web crawler and search engine implementation with a Flask web interface. Features inverted index-based search with TF-IDF ranking and thread-safe operations.
+This project is a full-stack intelligent search engine that performs hybrid search across the web and locally indexed documents.
+It integrates external APIs (Google, SerpAPI, job platforms, marketplaces) with an internal tokenized and ranked document database, delivering fast, relevant and structured results.
 
-## Features
+The system is designed with scalability, modularity and production readiness, supporting:
 
-- **Concurrent Crawling**: Multi-threaded web crawler using ThreadPoolExecutor
-- **Thread-safe Indexing**: In-memory inverted index with background auto-flush
-- **Efficient Storage**: Atomic file operations for index persistence
-- **TF-IDF Ranking**: Document scoring based on term frequency and inverse document frequency
-- **Clean Architecture**: Modular design with separation of concerns
-- **Web Interface**: Flask-based search UI
-- **Comprehensive Tests**: Unit tests covering core functionality
+Web UI search
 
-## Project Structure
+Job search aggregation
 
-```
+Marketplace price comparison
+
+Alerts & notifications
+
+Real-time monitoring and analytics
+
+🎯 Key Features
+Category	Capabilities
+🔎 Web Search	Federated search using Google / SerpAPI + custom ranking
+📁 Local Search	Full-text search over indexed JSON documents
+💼 Job Search	Aggregated job results + alert subscriptions
+🛒 Marketplace	Product comparison + price alerts
+🧠 NLP Processing	Spell correction, query parsing, keyword extraction, snippet generation
+⚡ Speed	In-memory caching + database storage indexing supports fast lookup
+📊 Monitoring	Metrics collection for performance & API tracking
+🔔 Notifications	Email job alerts / price drop alerts
+☁ API Ready	JSON REST API for frontend or 3rd-party consumers
+🧱 Tech Stack
+Layer	Technology
+Backend	Python, Flask
+Frontend	HTML, CSS, JavaScript
+Data Storage	JSON index + analytics store
+Processing	Custom tokenizer, ranker, filters, NLP pipeline
+External APIs	Google Search, SerpAPI, Job & Marketplace providers
+Task Queue (Optional)	Celery
+Deployment	Docker-ready
+📂 Folder Structure
 Search-Engine/
-├── src/
-│   ├── crawler/          # Web crawler implementation
-│   │   └── spider.py     # Concurrent webpage fetcher
-│   ├── indexing/         # Indexing logic
-│   │   └── indexer.py    # Thread-safe inverted index
-│   ├── processing/       # Text processing
-│   │   └── tokenizer.py  # Document tokenization
-│   ├── ranking/          # Search ranking
-│   │   └── ranker.py     # TF-IDF implementation
-│   ├── storage/          # Persistence layer
-│   │   └── database.py   # JSON-based storage
-│   └── web/             # Web interface
-│       ├── app.py       # Flask application
-│       ├── templates/   # HTML templates
-│       └── static/      # CSS/JS assets
-├── tests/               # Unit tests
-├── requirements.txt     # Project dependencies
-└── main.py             # Application entry point
-```
+│  API_DIAGNOSTIC_REPORT.md
+│  API_DOCUMENTATION.md
+│  API_RESULTS_LIMIT_FIX.md
+│  EXECUTIVE_SUMMARY.md
+│  EXTERNAL_API_FIX.md
+│  FINAL_STATUS.txt
+│  IMPLEMENTATION_COMPLETE.md
+│  TEST_RESULTS_FINAL.md
+│  README.md
+│  main.py
+│  setup.py
+│  requirements.txt
+│  init_db.py
+│  index.json
+│  celery_app.py
+│
+├─ data/
+│   └─ (indexed JSON data files)
+│
+├─ logs/
+│   └─ (generated runtime logs)
+│
+├─ src/
+│  ├─ config/
+│  │   ├─ config.py
+│  │   └─ __init__.py
+│  ├─ caching/
+│  │   └─ cache_manager.py
+│  ├─ crawler/
+│  │   └─ spider.py
+│  ├─ external/
+│  │   ├─ google_search_client.py
+│  │   └─ serpapi_client.py
+│  ├─ indexing/
+│  │   ├─ indexer.py
+│  │   └─ __init__.py
+│  ├─ jobs/
+│  │   ├─ job_search_client.py
+│  │   ├─ email_notifications.py
+│  │   └─ __init__.py
+│  ├─ marketplace/
+│  │   ├─ marketplace_client.py
+│  │   ├─ price_alerts.py
+│  │   └─ __init__.py
+│  ├─ monitoring/
+│  │   └─ metrics.py
+│  ├─ processing/
+│  │   ├─ tokenizer.py
+│  │   ├─ spell_corrector.py
+│  │   ├─ query_parser.py
+│  │   ├─ filter_processor.py
+│  │   └─ snippet_generator.py
+│  ├─ ranking/
+│  │   ├─ ranker.py
+│  │   ├─ advanced_ranker.py
+│  │   └─ __init__.py
+│  ├─ search/
+│  │   ├─ search_manager.py
+│  │   └─ __init__.py
+│  ├─ storage/
+│  │   ├─ analytics_store.py
+│  │   ├─ database.py
+│  │   └─ document_store.py
+│  ├─ utils/
+│  │   └─ logger.py
+│  ├─ web/
+│  │   ├─ app.py
+│  │   ├─ static/
+│  │   │   ├─ css/
+│  │   │   ├─ images/
+│  │   │   └─ js/
+│  │   │       ├─ api.js
+│  │   │       ├─ search.js
+│  │   │       ├─ results.js
+│  │   │       ├─ jobs.js
+│  │   │       ├─ utils.js
+│  │   │       ├─ filters.js
+│  │   │       └─ autocomplete.js
+│  │   └─ templates/
+│  │       ├─ base.html
+│  │       ├─ search.html
+│  │       ├─ jobs.html
+│  │       ├─ marketplace.html
+│  │       └─ marketplaces.html
+│  └─ __init__.py
+│
+└─ tests/
+   ├─ test_api_endpoints.py
+   ├─ test_crawler.py
+   ├─ test_indexer_concurrency.py
+   ├─ test_indexing.py
+   ├─ test_integration.py
+   ├─ postman_collection.json
+   ├─ conftest.py
+   └─ __init__.py
 
-## Quick Start
-
-1. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\\Scripts\\activate
-```
-
-2. Install dependencies:
-```bash
+🚀 Running the Project
+1️⃣ Install dependencies
 pip install -r requirements.txt
-```
 
-3. Run the application:
-```bash
+2️⃣ Initialize indexing database
+python init_db.py
+
+3️⃣ Start the engine
 python main.py
-```
 
-4. Open http://127.0.0.1:5000 in your browser
+4️⃣ Access UI
+http://127.0.0.1:5000
 
-## Development Setup
+📌 Contribution Guidelines
 
-1. Install development dependencies:
-```bash
-pip install pytest pytest-cov
-```
+Write modular PRs
 
-2. Run tests:
-```bash
-python -m pytest tests/
-```
+Add / update tests for every feature
 
-## Implementation Details
+Log API failures via monitoring module
 
-### Crawler (src/crawler/spider.py)
-- Concurrent webpage fetching using ThreadPoolExecutor
-- HTML parsing with BeautifulSoup4
-- Error handling for network issues
-- Configurable max workers
-
-### Indexer (src/indexing/indexer.py)
-- Thread-safe inverted index implementation
-- Optional background auto-flush capability
-- Memory-first with configurable persistence
-- Atomic updates using locks
-
-### Ranking (src/ranking/ranker.py)
-- TF-IDF scoring implementation
-- Document frequency normalization
-- Sorted results by relevance score
-
-### Storage (src/storage/database.py)
-- JSON-based persistent storage
-- Atomic write operations
-- Thread-safe implementation
-- Graceful handling of missing/corrupt files
-
-## Configuration
-
-The search engine is configured through environment variables. Copy `.env.example` to `.env` to get started:
-
-```bash
-cp .env.example .env
-```
-
-Available configuration options:
-
-### Flask Application
-- `FLASK_ENV`: Set to 'development' for debug mode
-- `FLASK_APP`: Application entry point
-- `FLASK_PORT`: Web interface port (default: 5000)
-- `FLASK_DEBUG`: Enable debug mode
-
-### Crawler
-- `MAX_WORKERS`: Number of concurrent crawler threads
-- `CRAWL_TIMEOUT`: Request timeout in seconds
-- `MAX_PAGES_PER_DOMAIN`: Page limit per domain
-- `RESPECT_ROBOTS_TXT`: Whether to check robots.txt
-- `USER_AGENT`: Crawler identification string
-
-### Indexer
-- `INDEX_FILE`: Path to store the inverted index
-- `AUTO_FLUSH`: Enable background auto-flush
-- `FLUSH_INTERVAL`: Seconds between flushes
-- `MAX_INDEX_SIZE`: Term limit in index
-
-### Storage
-- `STORAGE_DIR`: Data directory path
-- `BACKUP_ENABLED`: Enable index backups
-- `BACKUP_INTERVAL`: Backup frequency in seconds
-
-### Ranking
-- `MIN_TERM_FREQUENCY`: Minimum term frequency to index
-- `MAX_RESULTS`: Maximum search results to return
-
-### Debug
-- `LOG_LEVEL`: Logging verbosity
-- `PROFILE_ENABLED`: Enable performance profiling
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and ensure they pass
-5. Submit a pull request
-
-Improvement ideas:
-- Add BM25 ranking algorithm
-- Implement robots.txt compliance
-- Add query suggestions
-- Improve UI/UX
-- Add more comprehensive tests
-
-## Testing
-
-Run the test suite:
-```bash
-python -m pytest tests/
-```
-
-Run with coverage:
-```bash
-python -m pytest --cov=src tests/
-```
-
-## License
-
-MIT License - see LICENSE file for details.
+Document new feature behavior in /API_DOCUMENTATION.md

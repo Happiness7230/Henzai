@@ -2,7 +2,7 @@
    Results Page Styles
    ============================================================================ */
 
-   .results-page {
+.results-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -38,6 +38,31 @@
 .logo-small {
     width: 92px;
     height: auto;
+    border: 2px solid transparent;
+    animation-name: spider-crawl;
+    animation-duration: 14s; /* 4s (move) + 10s (rest) = 14s total cycle time */
+    animation-timing-function: ease-in-out; 
+    animation-iteration-count: infinite;
+}
+
+@keyframes spider-crawl {
+    /* 0% to ~28.57% is the 4-second active movement */
+    0% {
+        transform: translateY(0); /* Start position */
+    }
+    
+    14.285% { /* Halfway through the 4-second move (2s) */
+        transform: translateY(-10px); /* Moves up 10 pixels */
+    }
+    
+    28.57% { /* End of the 4-second move (4s total) */
+        transform: translateY(0); /* Returns to start position */
+    }
+    
+    /* 28.57% to 100% is the 10-second rest period */
+    100% {
+        transform: translateY(0); /* Stays at start position for the rest of the cycle */
+    }
 }
 
 /* Header Search Form */
@@ -98,6 +123,14 @@
     overflow-x: auto;
 }
 
+.tabs {
+    display: flex;
+    flex-direction: column; 
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-bottom: none; 
+    align-items: flex-start; 
+}
 .tab {
     display: flex;
     align-items: center;
@@ -109,7 +142,13 @@
     border-bottom: 3px solid transparent;
     transition: all var(--transition-fast);
     white-space: nowrap;
+    width: 100%;
+    padding: 10px 16px;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    justify-content: flex-start;
 }
+
 
 .tab:hover {
     color: var(--text-primary);
@@ -117,7 +156,7 @@
 
 .tab.active {
     color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
+    border-left-color: var(--bg-primary);
 }
 
 /* Main Content */
@@ -137,6 +176,7 @@
 /* Results Content */
 .results-content {
     min-width: 0;
+    display: flex;
 }
 
 /* Search Info */
@@ -247,6 +287,7 @@
 .result-nav
 {
     display: flex;
+    width: fit-content;
 }
 
 .result-favicon {
@@ -468,6 +509,16 @@
 
 .related-item:hover {
     background-color: var(--bg-hover);
+}
+
+/* NEW/FIXED STYLE: This targets the specific nav element */
+.results-nav {
+    display: flex;
+    flex-direction: column; /* <-- FORCES VERTICAL STACKING */
+    width: fit-content;
+    /* You can remove the rest of the nav properties if they are not needed */
+    padding: 0; /* Clear padding if you want tabs to hug the edge */
+    border-bottom: none; /* Remove bottom border if you want a clean vertical panel */
 }
 
 /* Responsive */

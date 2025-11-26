@@ -1,6 +1,7 @@
 """
 Hybrid Search Manager
-Orchestrates searches across local index and external APIs
+Orchestrates searches across local index and external APIs (Google + SerpAPI)
+Includes full normalization, blending, and fallback support
 """
 
 import os
@@ -15,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class SearchManager:
     """
-    Manages search operations across multiple sources (local + SerpAPI).
-    Handles result blending, deduplication, and re-ranking.
+    Manages search operations across multiple sources (local + SerpAPI + Google).
+    Handles result blending, deduplication, re-ranking, and normalization.
     """
     
     def __init__(
@@ -27,21 +28,15 @@ class SearchManager:
         cache_manager=None,
         mode: str = "hybrid",
     ):
-        self.google_client = google_client
-        self.local_ranker = local_ranker
-        self.serp_client = serpapi_client
-        self.cache_manager = cache_manager
-        # default search mode
-        self.mode = mode
-
         """
         Initialize Search Manager.
         
         Args:
+            google_client: Google Search client instance
             local_ranker: Local ranking engine instance
             serpapi_client: SerpAPI client instance
             cache_manager: Cache manager instance
-            mode: Search mode ('local', 'serpapi','google', 'hybrid')
+            mode: Search mode ('local', 'serpapi', 'google', 'hybrid')
         """
         self.google_client = google_client
         self.local_ranker = local_ranker
@@ -60,6 +55,7 @@ class SearchManager:
             'total_searches': 0,
             'local_searches': 0,
             'api_searches': 0,
+            'google_searches': 0,
             'hybrid_searches': 0,
             'cache_hits': 0,
             'avg_response_time': 0
@@ -81,10 +77,10 @@ class SearchManager:
             query: Search query
             max_results: Maximum results to return
             filters: Optional filters to apply
-            **kwargs: Additional search parameters
+            **kwargs: Additional search parameters (safe_search, region, time_period, etc.)
             
         Returns:
-            Unified search results dictionary
+            Unified search results dictionary with normalized structure
         """
         if max_results is None:
             from src.config.config import Config
@@ -123,6 +119,10 @@ class SearchManager:
             else:
                 raise ValueError(f"Invalid search mode: {self.mode}")
             
+            # CRITICAL: Normalize the response structure
+            # This ensures 'organic_results' becomes 'results' and all keys exist
+            results = self._normalize_response(results)
+            
             # Add metadata
             response_time = (datetime.now() - start_time).total_seconds()
             results['metadata']['response_time'] = response_time
@@ -145,7 +145,7 @@ class SearchManager:
             return results
             
         except Exception as e:
-            logger.error(f"Search failed: {str(e)}")
+            logger.error(f"Search failed: {str(e)}", exc_info=True)
             # Return empty results on error
             return self._empty_results(query, str(e))
     
@@ -155,7 +155,17 @@ class SearchManager:
         max_results: int,
         filters: Optional[Dict]
     ) -> Dict[str, Any]:
-        """Search using local index only."""
+        """
+        Search using local index only.
+        
+        Args:
+            query: Search query
+            max_results: Maximum results to return
+            filters: Optional filters
+            
+        Returns:
+            Dictionary with search results
+        """
         if not self.local_ranker:
             raise ValueError("Local ranker not configured")
         
@@ -164,10 +174,13 @@ class SearchManager:
         # Execute local search (rank() only accepts query and top_k)
         local_results = self.local_ranker.rank(query, top_k=max_results)
         
+        # Normalize local results using existing method
+        normalized_results = self._normalize_local_results(local_results)
+        
         return {
             'query': query,
-            'results': self._normalize_local_results(local_results),
-            'total': len(local_results),
+            'results': normalized_results,
+            'total': len(normalized_results),
             'metadata': {
                 'source': 'local',
                 'search_time': 0
@@ -181,10 +194,22 @@ class SearchManager:
         filters: Optional[Dict],
         **kwargs
     ) -> Dict[str, Any]:
-        """Search using SerpAPI only."""
+        """
+        Search using SerpAPI only.
+        
+        Args:
+            query: Search query
+            max_results: Maximum results to return
+            filters: Optional filters
+            **kwargs: Additional parameters
+            
+        Returns:
+            Dictionary with search results
+        """
         if not self.serpapi_client:
             raise ValueError("SerpAPI client not configured")
-        logger.debug(f"Performing API search: '{query}'")
+        
+        logger.debug(f"Performing SerpAPI search: '{query}'")
         
         # Execute API search
         api_results = self.serpapi_client.search(
@@ -205,6 +230,55 @@ class SearchManager:
             'metadata': api_results.get('metadata', {})
         }
     
+    def _search_google(
+        self,
+        query: str,
+        max_results: int,
+        filters: Optional[Dict],
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Search using Google Custom Search API.
+        
+        Args:
+            query: Search query
+            max_results: Maximum results to return
+            filters: Optional filters
+            **kwargs: Additional parameters
+            
+        Returns:
+            Dictionary with normalized search results
+        """
+        if not self.google_client:
+            raise ValueError("Google client not configured")
+
+        logger.debug(f"Performing Google search: '{query}'")
+
+        # Convert time period if provided
+        date_restrict = self._convert_time_period(kwargs.get('time_period'))
+
+        # Call Google client
+        google_results = self.google_client.search(
+            query=query,
+            max_results=max_results or 10,
+            safe_search=kwargs.get('safe_search', True),
+            date_restrict=date_restrict,
+            site_search=kwargs.get('site_search'),
+            file_type=kwargs.get('file_type'),
+            language=kwargs.get('language', 'en')
+        )
+
+        # Ensure normalized structure
+        return {
+            'query': query,
+            'results': google_results.get('organic_results', []) if isinstance(google_results, dict) else [],
+            'total': len(google_results.get('organic_results', [])) if isinstance(google_results, dict) else 0,
+            'answer_box': google_results.get('answer_box') if isinstance(google_results, dict) else None,
+            'knowledge_graph': google_results.get('knowledge_graph') if isinstance(google_results, dict) else None,
+            'related_searches': google_results.get('related_searches', []) if isinstance(google_results, dict) else [],
+            'metadata': google_results.get('metadata', {}) if isinstance(google_results, dict) else {}
+        }
+    
     def _search_hybrid(
         self,
         query: str,
@@ -213,16 +287,30 @@ class SearchManager:
         **kwargs
     ) -> Dict[str, Any]:
         """
-        Search using both local and API, blend results.
+        Search using both local and APIs (Google + SerpAPI), blend results.
         Executes searches in parallel for better performance.
+        
+        Args:
+            query: Search query
+            max_results: Maximum results to return
+            filters: Optional filters
+            **kwargs: Additional parameters
+            
+        Returns:
+            Dictionary with blended search results from all sources
         """
         logger.debug(f"Performing hybrid search: '{query}'")
         
         local_results = []
-        api_results = {}
+        google_results = {}
+        serpapi_results = {}
+        all_api_results = []
+        answer_box = None
+        knowledge_graph = None
+        related_searches = []
         
-        # Execute searches in parallel
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        # Execute searches in parallel (local + Google + SerpAPI)
+        with ThreadPoolExecutor(max_workers=4) as executor:
             futures = {}
             
             # Submit local search
@@ -231,20 +319,36 @@ class SearchManager:
                     self._search_local, query, max_results, filters
                 )
             
-            # Submit API search
+            # Submit Google search
+            if self.google_client:
+                futures['google'] = executor.submit(
+                    self._search_google, query, max_results, filters, **kwargs
+                )
+            
+            # Submit SerpAPI search
             if self.serpapi_client:
-                futures['api'] = executor.submit(
+                futures['serpapi'] = executor.submit(
                     self._search_api, query, max_results, filters, **kwargs
                 )
             
-            # Collect results
+            # Collect results from all futures
             for source, future in futures.items():
                 try:
                     result = future.result(timeout=10)
                     if source == 'local':
                         local_results = result.get('results', [])
-                    else:
-                        api_results = result
+                    elif source == 'google':
+                        google_results = result
+                        all_api_results.extend(result.get('results', []))
+                        answer_box = answer_box or result.get('answer_box')
+                        knowledge_graph = knowledge_graph or result.get('knowledge_graph')
+                        related_searches = related_searches or result.get('related_searches', [])
+                    elif source == 'serpapi':
+                        serpapi_results = result
+                        all_api_results.extend(result.get('results', []))
+                        answer_box = answer_box or result.get('answer_box')
+                        knowledge_graph = knowledge_graph or result.get('knowledge_graph')
+                        related_searches = related_searches or result.get('related_searches', [])
                 except Exception as e:
                     logger.warning(f"{source} search failed in hybrid mode: {str(e)}")
         
@@ -257,10 +361,10 @@ class SearchManager:
             except Exception as e:
                 logger.warning(f"Local fallback failed in hybrid mode: {str(e)}")
 
-        # Blend results
+        # Blend results from all sources
         blended = self._blend_results(
             local_results,
-            api_results.get('results', []),
+            all_api_results,
             max_results
         )
         
@@ -268,21 +372,18 @@ class SearchManager:
             'query': query,
             'results': blended,
             'total': len(blended),
-            'answer_box': api_results.get('answer_box'),
-            'knowledge_graph': api_results.get('knowledge_graph'),
-            'related_searches': api_results.get('related_searches', []),
+            'answer_box': answer_box,
+            'knowledge_graph': knowledge_graph,
+            'related_searches': related_searches,
             'metadata': {
                 'source': 'hybrid',
                 'local_count': len(local_results),
-                'api_count': len(api_results.get('results', [])),
+                'google_count': len(google_results.get('results', [])),
+                'serpapi_count': len(serpapi_results.get('results', [])),
+                'api_count': len(all_api_results),
                 'blended_count': len(blended)
             }
         }
-    def _google_search(self, query: str) -> List[dict]:
-        """Google Custom Search only."""
-        if not self.google_client:
-            return []
-        return self.google_client.search(query)
     
     def _blend_results(
         self,
@@ -295,7 +396,7 @@ class SearchManager:
         
         Args:
             local_results: Results from local index
-            api_results: Results from SerpAPI
+            api_results: Results from SerpAPI or Google
             max_results: Maximum results to return
             
         Returns:
@@ -329,11 +430,11 @@ class SearchManager:
                     seen_domains.add(domain)
             
             # Score based on position and freshness
-            position_score = 1.0 - (i / len(api_results))
+            position_score = 1.0 - (i / len(api_results)) if api_results else 1.0
             score = position_score * self.freshness_boost
             
             result['score'] = score
-            result['source'] = result.get('source', 'serpapi')
+            result['source'] = result.get('source', 'api')
             result['blend_position'] = i
             scored_results.append(result)
         
@@ -355,7 +456,20 @@ class SearchManager:
         return scored_results[:m]
     
     def _normalize_local_results(self, results: List[Dict]) -> List[Dict]:
-        """Normalize local results to match API format."""
+        """
+        Normalize local results to match API format.
+        
+        Supports multiple input formats:
+        - dict-like results with keys (title, url, snippet, score)
+        - tuple/list results from rankers: (doc_id, score)
+        - other formats (stringified)
+        
+        Args:
+            results: Raw local search results
+            
+        Returns:
+            List of normalized result dictionaries
+        """
         normalized = []
         for result in results:
             # Support two local result formats:
@@ -392,29 +506,110 @@ class SearchManager:
                 })
         return normalized
     
+    def _normalize_response(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Ensure response has consistent structure for frontend.
+        
+        This method handles the following normalizations:
+        1. Converts 'organic_results' key to 'results' (for Google/SerpAPI responses)
+        2. Ensures all required keys exist (results, metadata, total, etc.)
+        3. Maintains backward compatibility with existing code
+        
+        Args:
+            results: Raw search results from any search method
+            
+        Returns:
+            Normalized results dictionary with consistent structure
+        """
+        # If results already has 'results' key, ensure it's valid
+        if 'results' in results:
+            # Make sure it's a list
+            if not isinstance(results['results'], list):
+                results['results'] = []
+            return self._ensure_metadata(results)
+        
+        # If it has 'organic_results', rename it to 'results'
+        if 'organic_results' in results:
+            results['results'] = results.pop('organic_results')
+            return self._ensure_metadata(results)
+        
+        # If no results key at all, create empty results
+        results['results'] = []
+        return self._ensure_metadata(results)
+
+    def _ensure_metadata(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Ensure all required metadata keys exist in the response.
+        
+        Args:
+            results: Results dictionary
+            
+        Returns:
+            Results with complete metadata
+        """
+        # Ensure metadata exists
+        if 'metadata' not in results:
+            results['metadata'] = {}
+        
+        # Ensure total exists
+        if 'total' not in results:
+            results['total'] = len(results.get('results', []))
+        
+        # Ensure query exists
+        if 'query' not in results:
+            results['query'] = ''
+        
+        # Ensure optional fields have default values
+        if 'answer_box' not in results:
+            results['answer_box'] = None
+        
+        if 'knowledge_graph' not in results:
+            results['knowledge_graph'] = None
+        
+        if 'related_searches' not in results:
+            results['related_searches'] = []
+        
+        return results
+    
     def get_suggestions(self, query: str, max_suggestions: int = 10) -> List[str]:
         """
         Get autocomplete suggestions.
-        Falls back to local if API fails.
+        Tries multiple sources in order of preference, falls back gracefully.
+        
+        Priority order:
+        1. Google (if in google/hybrid mode)
+        2. SerpAPI (if in serpapi/hybrid mode)
+        3. Local (future implementation)
+        
+        Args:
+            query: Partial search query
+            max_suggestions: Maximum number of suggestions to return
+            
+        Returns:
+            List of suggestion strings
         """
-        # Try API first if available
+        # Try Google first if available and in appropriate mode
+        if self.google_client and self.mode in ['google', 'hybrid']:
+            try:
+                suggestions = self.google_client.get_suggestions(query, max_suggestions)
+                if suggestions:
+                    logger.debug(f"Got {len(suggestions)} suggestions from Google")
+                    return suggestions
+            except Exception as e:
+                logger.warning(f"Google suggestions failed: {str(e)}")
+        
+        # Try SerpAPI if available
         if self.serpapi_client and self.mode in ['serpapi', 'hybrid']:
             try:
                 suggestions = self.serpapi_client.get_suggestions(query, max_suggestions)
                 if suggestions:
+                    logger.debug(f"Got {len(suggestions)} suggestions from SerpAPI")
                     return suggestions
             except Exception as e:
-                logger.warning(f"API suggestions failed: {str(e)}"),
+                logger.warning(f"SerpAPI suggestions failed: {str(e)}")
         
-        if self.google_client and self.mode in ['serpapi', 'google', 'hybrid']:
-            try:
-                suggestions = self.google_client.get_suggestions(query, max_suggestions)
-                if suggestions:
-                    return suggestions
-            except Exception as e:
-                logger.warning(f"API suggestions failed: {str(e)}")
-        # Fallback to local suggestions (could be implemented)
-        # For now, return empty list
+        # Fallback to local suggestions (could be implemented in the future)
+        logger.debug("No suggestions available from any source")
         return []
     
     def set_mode(self, mode: str) -> bool:
@@ -422,23 +617,28 @@ class SearchManager:
         Change search mode at runtime.
         
         Args:
-            mode: New search mode ('local', 'serpapi', 'hybrid')
+            mode: New search mode ('local', 'serpapi', 'google', 'hybrid')
             
         Returns:
-            True if mode changed successfully
+            True if mode changed successfully, False otherwise
         """
-        # Ensure valid modes list includes the expected separators
         valid_modes = ['local', 'serpapi', 'google', 'hybrid']
         if mode not in valid_modes:
-            logger.error(f"Invalid mode: {mode}")
+            logger.error(f"Invalid mode: {mode}. Valid modes: {valid_modes}")
             return False
         
+        old_mode = self.mode
         self.mode = mode
-        logger.info(f"Search mode changed to: {mode}")
+        logger.info(f"Search mode changed from '{old_mode}' to '{mode}'")
         return True
     
     def get_stats(self) -> Dict[str, Any]:
-        """Get search statistics."""
+        """
+        Get search statistics.
+        
+        Returns:
+            Dictionary with statistics including cache hit rate
+        """
         return {
             **self.stats,
             'mode': self.mode,
@@ -449,9 +649,63 @@ class SearchManager:
             )
         }
     
+    def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
+        """
+        Search with automatic fallback between Google and SerpAPI.
+        Uses configuration to determine primary and fallback engines.
+        
+        Args:
+            query: Search query
+            **kwargs: Additional search parameters
+            
+        Returns:
+            Search results from primary or fallback engine
+        """
+        from src.config.config import Config
+        from src.external.google_search_client import GoogleSearchException
+
+        primary = Config.PRIMARY_SEARCH_ENGINE
+        fallback = Config.FALLBACK_SEARCH_ENGINE
+
+        max_results = kwargs.get('max_results', 10)
+        filters = kwargs.get('filters')
+
+        # Try primary engine
+        try:
+            if primary == 'google' and self.google_client:
+                logger.info(f"Using primary search engine: {primary}")
+                return self._search_google(query, max_results, filters, **kwargs)
+            elif primary == 'serpapi' and self.serpapi_client:
+                logger.info(f"Using primary search engine: {primary}")
+                return self._search_api(query, max_results, filters, **kwargs)
+        except (GoogleSearchException, Exception) as e:
+            logger.warning(f"Primary search engine ({primary}) failed: {str(e)}, switching to fallback: {fallback}")
+
+            # Try fallback engine
+            try:
+                if fallback == 'google' and self.google_client:
+                    logger.info(f"Using fallback search engine: {fallback}")
+                    return self._search_google(query, max_results, filters, **kwargs)
+                elif fallback == 'serpapi' and self.serpapi_client:
+                    logger.info(f"Using fallback search engine: {fallback}")
+                    return self._search_api(query, max_results, filters, **kwargs)
+            except Exception as e:
+                logger.error(f"Fallback search engine ({fallback}) also failed: {str(e)}")
+
+        # Both engines failed
+        return self._empty_results(query, "All search engines failed")
+    
     @staticmethod
     def _extract_domain(url: str) -> str:
-        """Extract domain from URL."""
+        """
+        Extract domain from URL.
+        
+        Args:
+            url: Full URL string
+            
+        Returns:
+            Domain name (e.g., 'example.com')
+        """
         try:
             parsed = urlparse(url)
             return parsed.netloc
@@ -460,7 +714,16 @@ class SearchManager:
     
     @staticmethod
     def _generate_cache_key(query: str, filters: Optional[Dict]) -> str:
-        """Generate cache key for query."""
+        """
+        Generate cache key for query.
+        
+        Args:
+            query: Search query
+            filters: Optional filters
+            
+        Returns:
+            MD5 hash-based cache key
+        """
         import hashlib
         key_parts = [query]
         if filters:
@@ -469,7 +732,12 @@ class SearchManager:
         return f"search:{hashlib.md5(key_string.encode()).hexdigest()}"
     
     def _update_stats(self, response_time: float):
-        """Update running statistics."""
+        """
+        Update running statistics with new response time.
+        
+        Args:
+            response_time: Response time in seconds
+        """
         total = self.stats['total_searches']
         current_avg = self.stats['avg_response_time']
         self.stats['avg_response_time'] = (
@@ -478,117 +746,47 @@ class SearchManager:
     
     @staticmethod
     def _empty_results(query: str, error: str = '') -> Dict[str, Any]:
-        """Return empty results structure."""
+        """
+        Return empty results structure for error cases.
+        
+        Args:
+            query: Original search query
+            error: Error message
+            
+        Returns:
+            Empty results dictionary
+        """
         return {
             'query': query,
             'results': [],
             'total': 0,
+            'answer_box': None,
+            'knowledge_graph': None,
+            'related_searches': [],
             'metadata': {
                 'source': 'error',
                 'error': error,
                 'timestamp': datetime.now().isoformat()
             }
         }
-    def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
+    
+    @staticmethod
+    def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
         """
-        Search with automatic fallback between Google and SerpAPI.
+        Convert time period to Google Custom Search format.
+        
+        Args:
+            time_period: Time period code ('d', 'w', 'm', 'y')
+            
+        Returns:
+            Google API format ('d1', 'w1', 'm1', 'y1') or None
         """
-        from src.config.config import Config
-        from src.external.google_search_client import GoogleSearchException
-        
-        primary = Config.PRIMARY_SEARCH_ENGINE
-        fallback = Config.FALLBACK_SEARCH_ENGINE
-
-        try:
-            if primary == 'google' and self.google_client:
-                return self._search_google(query, **kwargs)
-            elif primary == 'serpapi' and self.serpapi_client:
-                return self._search_api(query, **kwargs)
-        except (GoogleSearchException, Exception):
-            logger.warning(f"Primary search engine failed, switching to fallback: {fallback}")
-
-            try:
-                if fallback == 'google' and self.google_client:
-                    return self._search_google(query, **kwargs)
-                elif fallback == 'serpapi' and self.serpapi_client:
-                    return self._search_api(query, **kwargs)
-            except Exception:
-                logger.error("Fallback search failed")
-
-        return self._empty_results(query, "All search engines failed")
-
-    
-def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
-    """
-    Search with automatic fallback between Google and SerpAPI.
-    """
-    from src.config.config import Config
-    from src.external.google_search_client import GoogleSearchException
-    
-    primary = Config.PRIMARY_SEARCH_ENGINE
-    fallback = Config.FALLBACK_SEARCH_ENGINE
-    
-    # Try primary engine
-    try:
-        if primary == 'google' and self.google_client:
-            logger.info("Using Google as primary search engine")
-            return self._search_google(query, **kwargs)
-        elif primary == 'serpapi' and self.serpapi_client:
-            logger.info("Using SerpAPI as primary search engine")
-            return self._search_api(query, **kwargs)
-    except (GoogleSearchException, Exception) as e:
-        logger.warning(f"Primary search engine ({primary}) failed: {str(e)}")
-        logger.info(f"Falling back to {fallback}")
-        
-        # Try fallback
-        try:
-            if fallback == 'google' and self.google_client:
-                return self._search_google(query, **kwargs)
-            elif fallback == 'serpapi' and self.serpapi_client:
-                return self._search_api(query, **kwargs)
-        except Exception as e2:
-            logger.error(f"Fallback search engine ({fallback}) also failed: {str(e2)}")
-            if self.local_ranker:
-                return self._search_local(query, kwargs.get('max_results', 10), None)
-    
-    return self._empty_results(query, "All search engines failed")
-
-def _search_google(self, query: str, **kwargs) -> Dict[str, Any]:
-    """Search using Google Custom Search API"""
-    time_period = kwargs.get("time_period")
-    converted = self._convert_time_period(time_period)
-    
-    if not self.google_client:
-        raise ValueError("Google client not configured")
-    
-    results = self.google_client.search(
-        query=query,
-        max_results=kwargs.get('max_results', 10),
-        safe_search=kwargs.get('safe_search', True),
-        date_restrict=self._convert_time_period(kwargs.get('time_period')),
-        site_search=kwargs.get('site_search'),
-        file_type=kwargs.get('file_type')
-    )
-    
-    return {
-        'query': query,
-        'results': results.get('organic_results', []),
-        'total': len(results.get('organic_results', [])),
-        'answer_box': results.get('answer_box'),
-        'knowledge_graph': results.get('knowledge_graph'),
-        'related_searches': results.get('related_searches', []),
-        'metadata': results.get('metadata', {})
-    }
-
-@staticmethod
-def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
-    """Convert time period to Google format"""
-    if not time_period:
-        return None
-    mapping = {
-        'd': 'd1',
-        'w': 'w1',
-        'm': 'm1',
-        'y': 'y1'
-    }
-    return mapping.get(time_period)
+        if not time_period:
+            return None
+        mapping = {
+            'd': 'd1',  # Past day
+            'w': 'w1',  # Past week
+            'm': 'm1',  # Past month
+            'y': 'y1'   # Past year
+        }
+        return mapping.get(time_period)

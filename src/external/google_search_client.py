@@ -5,6 +5,7 @@ Official Google Search API integration with fallback support
 
 import os
 import logging
+import requests
 from typing import Dict, List, Optional, Any
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -62,7 +63,7 @@ class GoogleSearchClient:
     def search(
         self,
         query: str,
-        max_results: int = 10,
+        max_results: int = 70,
         safe_search: bool = True,
         date_restrict: Optional[str] = None,
         site_search: Optional[str] = None,
@@ -158,6 +159,50 @@ class GoogleSearchClient:
             self.stats['failed_requests'] += 1
             logger.error(f"Google search error: {str(e)}")
             raise GoogleSearchException(f"Search failed: {str(e)}")
+    
+    def get_suggestions(self, query: str, max_suggestions: int = 10) -> List[str]:
+        """
+        Get search suggestions/autocomplete for a query.
+        Uses Google's public autocomplete API.
+        
+        Args:
+            query: Partial search query
+            max_suggestions: Maximum number of suggestions to return
+            
+        Returns:
+            List of suggestion strings
+        """
+        try:
+            params = {
+                'client': 'firefox',
+                'q': query,
+                'hl': 'en'
+            }
+            
+            response = requests.get(
+                'https://suggestqueries.google.com/complete/search',
+                params=params,
+                timeout=5
+            )
+            response.raise_for_status()
+            
+            # Google returns JSON array: [query, [suggestions]]
+            data = response.json()
+            
+            if isinstance(data, list) and len(data) > 1:
+                suggestions = data[1][:max_suggestions]
+                logger.info(f"Got {len(suggestions)} suggestions for query: '{query}'")
+                return suggestions
+            
+            logger.warning(f"No suggestions found for query: '{query}'")
+            return []
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Google Suggestions API error: {str(e)}")
+            return []
+        except (ValueError, KeyError, IndexError) as e:
+            logger.error(f"Error parsing suggestions response: {str(e)}")
+            return []
     
     def _normalize_results(self, raw_results: Dict, query: str) -> Dict[str, Any]:
         """

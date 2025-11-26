@@ -62,13 +62,25 @@ class JobSearchClient:
         """
         self.stats['total_searches'] += 1
         
+        # If no API key, always use mock data
+        if not self.rapidapi_key:
+            logger.warning("RapidAPI key not configured. Using mock job data.")
+            return self._get_mock_job_results(query, location, max_results, remote_only, min_salary)
+        
         if not sources:
             sources = ['indeed', 'linkedin']
+
+        # Normalize job_type and experience_level when callers pass arrays (frontend may send arrays)
+        if isinstance(job_type, list):
+            job_type = job_type[0] if job_type else None
+        if isinstance(experience_level, list):
+            experience_level = experience_level[0] if experience_level else None
         
         results = {
             'query': query,
             'location': location,
             'jobs': [],
+            'results': [],  # Alias for frontend compatibility
             'sources': {},
             'metadata': {
                 'total_results': 0,
@@ -111,9 +123,15 @@ class JobSearchClient:
                     results['sources'][source] = []
                     self.stats['failed_searches'] += 1
         
+        # If we got no results from any source, fall back to mock data
+        if len(results['jobs']) == 0:
+            logger.info("No real results found, using mock data as fallback")
+            return self._get_mock_job_results(query, location, max_results, remote_only, min_salary)
+        
         # Deduplicate and sort
         results['jobs'] = self._deduplicate_jobs(results['jobs'])
         results['jobs'] = self._sort_jobs(results['jobs'], min_salary)
+        results['results'] = results['jobs']  # Alias for frontend
         results['metadata']['total_results'] = len(results['jobs'])
         self.stats['total_jobs_returned'] += len(results['jobs'])
         
@@ -153,7 +171,10 @@ class JobSearchClient:
                 params["remotejob"] = "true"
             
             if job_type:
-                params["jt"] = job_type.lower()
+                try:
+                    params["jt"] = str(job_type).lower()
+                except Exception:
+                    params["jt"] = str(job_type)
             
             response = requests.get(url, headers=headers, params=params, timeout=10)
             response.raise_for_status()
@@ -223,7 +244,10 @@ class JobSearchClient:
                 params["workplaceType"] = "remote"
             
             if experience_level:
-                params["experienceLevel"] = experience_level.lower()
+                try:
+                    params["experienceLevel"] = str(experience_level).lower()
+                except Exception:
+                    params["experienceLevel"] = str(experience_level)
             
             response = requests.get(url, headers=headers, params=params, timeout=10)
             response.raise_for_status()
@@ -365,6 +389,95 @@ class JobSearchClient:
             return None
         except:
             return None
+    
+    def _get_mock_job_results(
+        self,
+        query: str,
+        location: str,
+        max_results: int,
+        remote_only: bool,
+        min_salary: Optional[int]
+    ) -> Dict[str, Any]:
+        """Return mock job results for demo/testing"""
+        mock_jobs = [
+            {
+                'id': 'mock-job-1',
+                'title': f'{query} Developer',
+                'company': 'Tech Company A',
+                'location': location or 'San Francisco, CA',
+                'description': f'We are looking for a {query} developer to join our growing team.',
+                'salary': 120000,
+                'salary_text': '$100k - $140k',
+                'job_type': 'Full-time',
+                'remote': not remote_only,
+                'posted_date': '2025-11-20',
+                'url': 'https://example.com/job1',
+                'source': 'demo',
+                'timestamp': datetime.now().isoformat(),
+                'tags': ['remote', 'senior'],
+                'requirements': ['3+ years experience', 'Strong coding skills'],
+                'benefits': ['Health insurance', 'Remote work', 'Competitive salary']
+            },
+            {
+                'id': 'mock-job-2',
+                'title': f'{query} Engineer',
+                'company': 'Tech Company B',
+                'location': 'Remote',
+                'description': f'Join us as a {query} engineer and make an impact.',
+                'salary': 130000,
+                'salary_text': '$110k - $150k',
+                'job_type': 'Full-time',
+                'remote': True,
+                'posted_date': '2025-11-19',
+                'url': 'https://example.com/job2',
+                'source': 'demo',
+                'timestamp': datetime.now().isoformat(),
+                'tags': ['remote', 'mid-level'],
+                'requirements': ['5+ years experience'],
+                'benefits': ['Stock options', 'Health insurance']
+            },
+            {
+                'id': 'mock-job-3',
+                'title': f'{query} Specialist',
+                'company': 'Tech Company C',
+                'location': location or 'New York, NY',
+                'description': f'Seeking a {query} specialist for our NYC office.',
+                'salary': 95000,
+                'salary_text': '$85k - $105k',
+                'job_type': 'Full-time',
+                'remote': False,
+                'posted_date': '2025-11-18',
+                'url': 'https://example.com/job3',
+                'source': 'demo',
+                'timestamp': datetime.now().isoformat(),
+                'tags': ['entry-level'],
+                'requirements': ['1+ years experience', 'Degree required'],
+                'benefits': ['Health insurance', '401k']
+            }
+        ]
+        
+        # Apply filters
+        filtered = mock_jobs
+        if remote_only:
+            filtered = [j for j in filtered if j.get('remote')]
+        if min_salary:
+            filtered = [j for j in filtered if (j.get('salary') or 0) >= min_salary]
+        
+        filtered = filtered[:max_results]
+        
+        return {
+            'query': query,
+            'location': location,
+            'jobs': filtered,
+            'results': filtered,
+            'sources': {'demo': filtered},
+            'metadata': {
+                'total_results': len(filtered),
+                'sources_searched': ['demo'],
+                'timestamp': datetime.now().isoformat(),
+                'note': 'Mock data - configure RAPIDAPI_KEY for real results'
+            }
+        }
     
     def get_stats(self) -> Dict[str, Any]:
         """Get job search statistics"""

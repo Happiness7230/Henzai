@@ -70,15 +70,44 @@ class MarketplaceClient:
         self.stats['total_searches'] += 1
         
         if not marketplaces:
+            # Default marketplaces set
             marketplaces = ['amazon', 'ebay', 'walmart']
+
+        # Filter marketplaces by available credentials and record unavailable ones
+        available = []
+        unavailable = []
+        for m in marketplaces:
+            if m == 'amazon' and self.amazon_access_key:
+                available.append('amazon')
+            elif m == 'ebay' and self.ebay_app_id:
+                available.append('ebay')
+            elif m == 'walmart' and self.rapidapi_key:
+                available.append('walmart')
+            else:
+                unavailable.append(m)
+
+        if not available:
+            # No marketplace credentials available -> fallback to mock data
+            logger.warning("No marketplace API credentials available for requested marketplaces: %s. Using mock data.", unavailable)
+            mock_res = self._get_mock_marketplace_results(query, max_results, min_price, max_price)
+            # Ensure metadata includes unavailable list for consistency
+            if 'metadata' not in mock_res:
+                mock_res['metadata'] = {}
+            mock_res['metadata']['unavailable'] = unavailable
+            return mock_res
+
+        # Use only available marketplaces
+        marketplaces = available
         
         results = {
             'query': query,
             'products': [],
+            'results': [],  # Alias for frontend compatibility
             'marketplaces': {},
             'metadata': {
                 'total_results': 0,
                 'sources': [],
+                'unavailable': unavailable if unavailable else [],
                 'timestamp': datetime.now().isoformat()
             }
         }
@@ -115,9 +144,19 @@ class MarketplaceClient:
                     results['marketplaces'][marketplace] = []
                     self.stats['failed_searches'] += 1
         
+        # If we got no results from any provider, fall back to mock data
+        if len(results['products']) == 0:
+            logger.warning(f"No real results from any marketplace for query '{query}'. Using mock data as fallback.")
+            mock_res = self._get_mock_marketplace_results(query, max_results, min_price, max_price)
+            if 'metadata' not in mock_res:
+                mock_res['metadata'] = {}
+            mock_res['metadata']['unavailable'] = unavailable
+            return mock_res
+        
         # Sort and deduplicate
         results['products'] = self._deduplicate_products(results['products'])
         results['products'] = self._sort_products(results['products'], sort_by)
+        results['results'] = results['products']  # Alias for frontend
         results['metadata']['total_results'] = len(results['products'])
         
         return results
@@ -418,6 +457,81 @@ class MarketplaceClient:
             return 0.0
         except:
             return 0.0
+    
+    def _get_mock_marketplace_results(
+        self,
+        query: str,
+        max_results: int,
+        min_price: Optional[float],
+        max_price: Optional[float]
+    ) -> Dict[str, Any]:
+        """Return mock marketplace results for demo/testing"""
+        mock_products = [
+            {
+                'id': 'mock-1',
+                'title': f'{query} - Premium Edition',
+                'price': 99.99,
+                'currency': 'USD',
+                'url': 'https://example.com/product1',
+                'image': 'https://via.placeholder.com/200?text=Product+1',
+                'rating': 4.5,
+                'reviews': 128,
+                'marketplace': 'amazon',
+                'in_stock': True,
+                'shipping': 'Free shipping',
+                'timestamp': datetime.now().isoformat()
+            },
+            {
+                'id': 'mock-2',
+                'title': f'{query} - Standard Edition',
+                'price': 49.99,
+                'currency': 'USD',
+                'url': 'https://example.com/product2',
+                'image': 'https://via.placeholder.com/200?text=Product+2',
+                'rating': 4.2,
+                'reviews': 89,
+                'marketplace': 'ebay',
+                'in_stock': True,
+                'shipping': '$5.00 shipping',
+                'timestamp': datetime.now().isoformat()
+            },
+            {
+                'id': 'mock-3',
+                'title': f'{query} - Deluxe Package',
+                'price': 149.99,
+                'currency': 'USD',
+                'url': 'https://example.com/product3',
+                'image': 'https://via.placeholder.com/200?text=Product+3',
+                'rating': 4.7,
+                'reviews': 256,
+                'marketplace': 'walmart',
+                'in_stock': True,
+                'shipping': 'Free shipping',
+                'timestamp': datetime.now().isoformat()
+            }
+        ]
+        
+        # Apply price filters
+        filtered = mock_products
+        if min_price:
+            filtered = [p for p in filtered if p['price'] >= min_price]
+        if max_price:
+            filtered = [p for p in filtered if p['price'] <= max_price]
+        
+        filtered = filtered[:max_results]
+        
+        return {
+            'query': query,
+            'products': filtered,
+            'results': filtered,
+            'marketplaces': {'demo': filtered},
+            'metadata': {
+                'total_results': len(filtered),
+                'sources': ['demo'],
+                'timestamp': datetime.now().isoformat(),
+                'note': 'Mock data - configure API credentials for real results'
+            }
+        }
     
     def _get_amazon_product(self, product_id: str) -> Optional[Dict]:
         """Get detailed Amazon product info"""

@@ -3,7 +3,8 @@
  * Common helper functions used across the application
  */
 
-const Utils = {
+if (typeof Utils === 'undefined') {
+    const Utils = {
     /**
      * Show toast notification
      * @param {string} message - The message to display
@@ -308,3 +309,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Export for use in other scripts
 window.Utils = Utils;
+}
