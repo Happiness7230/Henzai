@@ -9,6 +9,7 @@ dist/
 .vscode/
 .idea/
 *.log
+TEST_RESULTS_FINAL.md
 coverage/
 *.sqlite3
 *.db

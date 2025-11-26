@@ -25,6 +25,19 @@
       "is_active": true,
       "last_checked": null,
       "alert_sent": false
+    },
+    "7a205129-050b-4b2f-b162-8ed193ae2ddc": {
+      "id": "7a205129-050b-4b2f-b162-8ed193ae2ddc",
+      "user_email": "obochihappiness180@gmail.com",
+      "product_name": "nike - Premium Edition",
+      "product_url": "https://example.com/product1",
+      "marketplace": "amazon",
+      "target_price": 80.99,
+      "current_price": 99.99,
+      "created_at": "2025-11-26T16:52:34.352888",
+      "is_active": true,
+      "last_checked": null,
+      "alert_sent": false
     }
   },
   "price_history": {
