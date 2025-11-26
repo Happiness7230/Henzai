@@ -33,4 +33,4 @@ requests-cache==1.1.1  # API response caching
 # Note: No additional packages needed, using requests
 
 google-api-python-client
-vercel-proxy
+
