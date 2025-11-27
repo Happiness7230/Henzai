@@ -25,6 +25,7 @@ class SearchManager:
         serpapi_client=None,
         cache_manager=None,
         mode: str = 'hybrid'
+        google_client=None,
     ):
         """
         Initialize Search Manager.
@@ -38,6 +39,7 @@ class SearchManager:
         self.local_ranker = local_ranker
         self.serpapi_client = serpapi_client
         self.cache_manager = cache_manager
+        self.google_client = google_client
         self.mode = mode or os.getenv('SEARCH_MODE', 'hybrid')
         
         # Configuration
