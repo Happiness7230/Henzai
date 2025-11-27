@@ -24,8 +24,8 @@ class SearchManager:
         local_ranker=None,
         serpapi_client=None,
         cache_manager=None,
-        mode: str = 'hybrid'
         google_client=None,
+        mode: str = 'hybrid'
     ):
         """
         Initialize Search Manager.
