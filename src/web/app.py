@@ -1322,7 +1322,8 @@ if __name__ == '__main__':
     
     # Initialize all components
     initialize_components()
-    
+    search_manager = SearchManager()
+    search_manager.load()
     
     # Run app
     app.run(
