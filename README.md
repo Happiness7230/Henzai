@@ -1,8 +1,10 @@
-# Search Engine — Hybrid Web & Local Indexed Search
+#  <img width="700" height="700" alt="Barbie logo-04 (3)" src="https://github.com/user-attachments/assets/eb3eeac8-8ca5-45bb-9640-608140839196" />
+Stein Search — Hybrid Web & Local Indexed Search
 
 ## 📌 Overview
 
-This project is a full-stack intelligent search engine that performs hybrid search across the web and locally indexed documents. It integrates external APIs (Google, SerpAPI, job platforms, marketplaces) with an internal tokenized and ranked document database, delivering fast, relevant and structured results.
+This project is a full-stack intelligent search engine that performs hybrid search across the web and locally indexed documents. It integrates external APIs (Google, SerpAPI, job platforms, marketplaces) with an internal tokenized and ranked document database, delivering fast, relevant and str
+uctured results.
 
 The system is designed with scalability, modularity and production readiness, supporting:
 
