@@ -1,5 +1,5 @@
-#  <img width="700" height="700" alt="Barbie logo-04 (3)" src="https://github.com/user-attachments/assets/eb3eeac8-8ca5-45bb-9640-608140839196" />
-Stein Search — Hybrid Web & Local Indexed Search
+ <img width="700" height="700" alt="Barbie logo-04 (3)" src="https://github.com/user-attachments/assets/eb3eeac8-8ca5-45bb-9640-608140839196" /> 
+ # Stein Search — Hybrid Web & Local Indexed Search
 
 ## 📌 Overview
 
