@@ -59,7 +59,7 @@ app = Flask(__name__,
     static_url_path='/static')
 
 search_manager = SearchManager()
-search_manager.load()
+search_manager.search()
 
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 app.config['JSON_SORT_KEYS'] = False
