@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from src.search import SearchManager
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -56,6 +57,9 @@ app = Flask(__name__,
     template_folder=os.path.join(basedir, 'templates'),
     static_folder=os.path.join(basedir, 'static'),
     static_url_path='/static')
+
+search_manager = SearchManager()
+search_manager.load()
 
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 app.config['JSON_SORT_KEYS'] = False
