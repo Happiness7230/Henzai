@@ -322,11 +322,13 @@ class SearchManager:
                 futures['local'] = executor.submit(
                     self._search_local, query, max_results, filters
                 )
-            
+                google_kwargs = kwargs.copy()
+                google_kwargs['max_results'] = max_results
+                google_kwargs['filters'] = filters 
             # Submit Google search
             if self.google_client:
                 futures['google'] = executor.submit(
-                    self._search_google, query, max_results, filters, **kwargs
+                    self._search_google, query, **google_kwargs
                 )
             
             # Submit SerpAPI search
@@ -671,7 +673,7 @@ class SearchManager:
         primary = Config.PRIMARY_SEARCH_ENGINE
         fallback = Config.FALLBACK_SEARCH_ENGINE
 
-        max_results = kwargs.get('max_results', 10)
+        max_results = kwargs.get('max_results', 70)
         filters = kwargs.get('filters')
 
         # Try primary engine
@@ -774,6 +776,63 @@ class SearchManager:
             }
         }
     
+    def _search_google(self, query: str, **kwargs) -> Dict[str, Any]:
+        """Search using Google Custom Search API"""
+        if not self.google_client:
+            raise ValueError("Google client not configured")
+    
+        results = self.google_client.search(
+            query=query,
+            max_results=kwargs.get('max_results', 10),
+            safe_search=kwargs.get('safe_search', True),
+            date_restrict=self._convert_time_period(kwargs.get('time_period')),
+            site_search=kwargs.get('site_search'),
+            file_type=kwargs.get('file_type')
+        )   
+    
+        return {
+            'query': query,
+            'results': results.get('organic_results', []),
+            'total': len(results.get('organic_results', [])),
+            'answer_box': results.get('answer_box'),
+            'knowledge_graph': results.get('knowledge_graph'),
+            'related_searches': results.get('related_searches', []),
+            'metadata': results.get('metadata', {})
+        }
+
+    @staticmethod
+    def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
+        """Convert time period to Google format"""
+        if not time_period:
+            return None
+        mapping = {
+            'd': 'd1',
+            'w': 'w1',
+            'm': 'm1',
+            'y': 'y1'
+        }
+        return mapping.get(time_period)
+    @staticmethod
+    def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
+        """
+        Convert time period to Google Custom Search format.
+        
+        Args:
+            time_period: Time period code ('d', 'w', 'm', 'y')
+            
+        Returns:
+            Google API format ('d1', 'w1', 'm1', 'y1') or None
+        """
+        if not time_period:
+            return None
+        mapping = {
+            'd': 'd1',  # Past day
+            'w': 'w1',  # Past week
+            'm': 'm1',  # Past month
+            'y': 'y1'   # Past year
+        }
+        return mapping.get(time_period)
+    
 def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
     """
     Search with automatic fallback between Google and SerpAPI.
@@ -809,60 +868,3 @@ def search_with_fallback(self, query: str, **kwargs) -> Dict[str, Any]:
     
     return self._empty_results(query, "All search engines failed")
 
-def _search_google(self, query: str, **kwargs) -> Dict[str, Any]:
-    """Search using Google Custom Search API"""
-    if not self.google_client:
-        raise ValueError("Google client not configured")
-    
-    results = self.google_client.search(
-        query=query,
-        max_results=kwargs.get('max_results', 10),
-        safe_search=kwargs.get('safe_search', True),
-        date_restrict=self._convert_time_period(kwargs.get('time_period')),
-        site_search=kwargs.get('site_search'),
-        file_type=kwargs.get('file_type')
-    )
-    
-    return {
-        'query': query,
-        'results': results.get('organic_results', []),
-        'total': len(results.get('organic_results', [])),
-        'answer_box': results.get('answer_box'),
-        'knowledge_graph': results.get('knowledge_graph'),
-        'related_searches': results.get('related_searches', []),
-        'metadata': results.get('metadata', {})
-    }
-
-@staticmethod
-def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
-    """Convert time period to Google format"""
-    if not time_period:
-        return None
-    mapping = {
-        'd': 'd1',
-        'w': 'w1',
-        'm': 'm1',
-        'y': 'y1'
-    }
-    return mapping.get(time_period)
-
-    @staticmethod
-    def _convert_time_period(time_period: Optional[str]) -> Optional[str]:
-        """
-        Convert time period to Google Custom Search format.
-        
-        Args:
-            time_period: Time period code ('d', 'w', 'm', 'y')
-            
-        Returns:
-            Google API format ('d1', 'w1', 'm1', 'y1') or None
-        """
-        if not time_period:
-            return None
-        mapping = {
-            'd': 'd1',  # Past day
-            'w': 'w1',  # Past week
-            'm': 'm1',  # Past month
-            'y': 'y1'   # Past year
-        }
-        return mapping.get(time_period)
