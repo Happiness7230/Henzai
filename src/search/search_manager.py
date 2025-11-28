@@ -44,8 +44,6 @@ class SearchManager:
         self.cache_manager = cache_manager
         self.google_client = google_client
         self.mode = mode or os.getenv('SEARCH_MODE', 'hybrid')
-        
-        self.mode = mode 
 
         # Configuration
         self.blend_ratio = float(os.getenv('HYBRID_BLEND_RATIO', 0.5))

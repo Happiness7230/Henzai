@@ -1,158 +1,199 @@
-Search Engine — Hybrid Web & Local Indexed Search
-📌 Overview
+ ### <img width="200" height="200" alt="Barbie logo-04 (3)" src="https://github.com/user-attachments/assets/eb3eeac8-8ca5-45bb-9640-608140839196" /> 
+ # Stein Search — Hybrid Web & Local Indexed Search
 
-This project is a full-stack intelligent search engine that performs hybrid search across the web and locally indexed documents.
-It integrates external APIs (Google, SerpAPI, job platforms, marketplaces) with an internal tokenized and ranked document database, delivering fast, relevant and structured results.
+## 📌 Overview
+
+This project is a full-stack intelligent search engine that performs hybrid search across the web and locally indexed documents. It integrates external APIs (Google, SerpAPI, job platforms, marketplaces) with an internal tokenized and ranked document database, delivering fast, relevant and str
+uctured results.
 
 The system is designed with scalability, modularity and production readiness, supporting:
 
-Web UI search
+- Web UI search
+- Job search aggregation
+- Marketplace price comparison
+- Alerts & notifications
+- Real-time monitoring and analytics
 
-Job search aggregation
+## 🎯 Key Features
 
-Marketplace price comparison
+| Category | Capabilities |
+|----------|-------------|
+| 🔎 Web Search | Federated search using Google / SerpAPI + custom ranking |
+| 📁 Local Search | Full-text search over indexed JSON documents |
+| 💼 Job Search | Aggregated job results + alert subscriptions |
+| 🛒 Marketplace | Product comparison + price alerts |
+| 🧠 NLP Processing | Spell correction, query parsing, keyword extraction, snippet generation |
+| ⚡ Speed | In-memory caching + database storage indexing supports fast lookup |
+| 📊 Monitoring | Metrics collection for performance & API tracking |
+| 🔔 Notifications | Email job alerts / price drop alerts |
+| ☁️ API Ready | JSON REST API for frontend or 3rd-party consumers |
 
-Alerts & notifications
+## 🧱 Tech Stack
 
-Real-time monitoring and analytics
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python, Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Data Storage | JSON index + analytics store |
+| Processing | Custom tokenizer, ranker, filters, NLP pipeline |
+| External APIs | Google Search, SerpAPI, Job & Marketplace providers |
+| Task Queue (Optional) | Celery |
+| Deployment | Docker-ready |
 
-🎯 Key Features
-Category	Capabilities
-🔎 Web Search	Federated search using Google / SerpAPI + custom ranking
-📁 Local Search	Full-text search over indexed JSON documents
-💼 Job Search	Aggregated job results + alert subscriptions
-🛒 Marketplace	Product comparison + price alerts
-🧠 NLP Processing	Spell correction, query parsing, keyword extraction, snippet generation
-⚡ Speed	In-memory caching + database storage indexing supports fast lookup
-📊 Monitoring	Metrics collection for performance & API tracking
-🔔 Notifications	Email job alerts / price drop alerts
-☁ API Ready	JSON REST API for frontend or 3rd-party consumers
-🧱 Tech Stack
-Layer	Technology
-Backend	Python, Flask
-Frontend	HTML, CSS, JavaScript
-Data Storage	JSON index + analytics store
-Processing	Custom tokenizer, ranker, filters, NLP pipeline
-External APIs	Google Search, SerpAPI, Job & Marketplace providers
-Task Queue (Optional)	Celery
-Deployment	Docker-ready
-📂 Folder Structure
+## 📂 Folder Structure
+
+```
 Search-Engine/
-│  API_DIAGNOSTIC_REPORT.md
-│  API_DOCUMENTATION.md
-│  API_RESULTS_LIMIT_FIX.md
-│  EXECUTIVE_SUMMARY.md
-│  EXTERNAL_API_FIX.md
-│  FINAL_STATUS.txt
-│  IMPLEMENTATION_COMPLETE.md
-│  TEST_RESULTS_FINAL.md
-│  README.md
-│  main.py
-│  setup.py
-│  requirements.txt
-│  init_db.py
-│  index.json
-│  celery_app.py
 │
-├─ data/
-│   └─ (indexed JSON data files)
+├── README.md
+├── main.py
+├── setup.py
+├── requirements.txt
+├── init_db.py
+├── index.json
+├── celery_app.py
 │
-├─ logs/
-│   └─ (generated runtime logs)
+├── API_DIAGNOSTIC_REPORT.md
+├── API_DOCUMENTATION.md
+├── API_RESULTS_LIMIT_FIX.md
+├── EXECUTIVE_SUMMARY.md
+├── EXTERNAL_API_FIX.md
+├── FINAL_STATUS.txt
+├── IMPLEMENTATION_COMPLETE.md
+├── TEST_RESULTS_FINAL.md
 │
-├─ src/
-│  ├─ config/
-│  │   ├─ config.py
-│  │   └─ __init__.py
-│  ├─ caching/
-│  │   └─ cache_manager.py
-│  ├─ crawler/
-│  │   └─ spider.py
-│  ├─ external/
-│  │   ├─ google_search_client.py
-│  │   └─ serpapi_client.py
-│  ├─ indexing/
-│  │   ├─ indexer.py
-│  │   └─ __init__.py
-│  ├─ jobs/
-│  │   ├─ job_search_client.py
-│  │   ├─ email_notifications.py
-│  │   └─ __init__.py
-│  ├─ marketplace/
-│  │   ├─ marketplace_client.py
-│  │   ├─ price_alerts.py
-│  │   └─ __init__.py
-│  ├─ monitoring/
-│  │   └─ metrics.py
-│  ├─ processing/
-│  │   ├─ tokenizer.py
-│  │   ├─ spell_corrector.py
-│  │   ├─ query_parser.py
-│  │   ├─ filter_processor.py
-│  │   └─ snippet_generator.py
-│  ├─ ranking/
-│  │   ├─ ranker.py
-│  │   ├─ advanced_ranker.py
-│  │   └─ __init__.py
-│  ├─ search/
-│  │   ├─ search_manager.py
-│  │   └─ __init__.py
-│  ├─ storage/
-│  │   ├─ analytics_store.py
-│  │   ├─ database.py
-│  │   └─ document_store.py
-│  ├─ utils/
-│  │   └─ logger.py
-│  ├─ web/
-│  │   ├─ app.py
-│  │   ├─ static/
-│  │   │   ├─ css/
-│  │   │   ├─ images/
-│  │   │   └─ js/
-│  │   │       ├─ api.js
-│  │   │       ├─ search.js
-│  │   │       ├─ results.js
-│  │   │       ├─ jobs.js
-│  │   │       ├─ utils.js
-│  │   │       ├─ filters.js
-│  │   │       └─ autocomplete.js
-│  │   └─ templates/
-│  │       ├─ base.html
-│  │       ├─ search.html
-│  │       ├─ jobs.html
-│  │       ├─ marketplace.html
-│  │       └─ marketplaces.html
-│  └─ __init__.py
+├── data/
+│   └── (indexed JSON data files)
 │
-└─ tests/
-   ├─ test_api_endpoints.py
-   ├─ test_crawler.py
-   ├─ test_indexer_concurrency.py
-   ├─ test_indexing.py
-   ├─ test_integration.py
-   ├─ postman_collection.json
-   ├─ conftest.py
-   └─ __init__.py
+├── logs/
+│   └── (generated runtime logs)
+│
+├── src/
+│   ├── __init__.py
+│   │
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── config.py
+│   │
+│   ├── caching/
+│   │   └── cache_manager.py
+│   │
+│   ├── crawler/
+│   │   └── spider.py
+│   │
+│   ├── external/
+│   │   ├── google_search_client.py
+│   │   └── serpapi_client.py
+│   │
+│   ├── indexing/
+│   │   ├── __init__.py
+│   │   └── indexer.py
+│   │
+│   ├── jobs/
+│   │   ├── __init__.py
+│   │   ├── job_search_client.py
+│   │   └── email_notifications.py
+│   │
+│   ├── marketplace/
+│   │   ├── __init__.py
+│   │   ├── marketplace_client.py
+│   │   └── price_alerts.py
+│   │
+│   ├── monitoring/
+│   │   └── metrics.py
+│   │
+│   ├── processing/
+│   │   ├── tokenizer.py
+│   │   ├── spell_corrector.py
+│   │   ├── query_parser.py
+│   │   ├── filter_processor.py
+│   │   └── snippet_generator.py
+│   │
+│   ├── ranking/
+│   │   ├── __init__.py
+│   │   ├── ranker.py
+│   │   └── advanced_ranker.py
+│   │
+│   ├── search/
+│   │   ├── __init__.py
+│   │   └── search_manager.py
+│   │
+│   ├── storage/
+│   │   ├── analytics_store.py
+│   │   ├── database.py
+│   │   └── document_store.py
+│   │
+│   ├── utils/
+│   │   └── logger.py
+│   │
+│   └── web/
+│       ├── app.py
+│       │
+│       ├── static/
+│       │   ├── css/
+│       │   │   └── (stylesheets)
+│       │   │
+│       │   ├── images/
+│       │   │   └── (image assets)
+│       │   │
+│       │   └── js/
+│       │       ├── api.js
+│       │       ├── search.js
+│       │       ├── results.js
+│       │       ├── jobs.js
+│       │       ├── utils.js
+│       │       ├── filters.js
+│       │       └── autocomplete.js
+│       │
+│       └── templates/
+│           ├── base.html
+│           ├── search.html
+│           ├── jobs.html
+│           ├── marketplace.html
+│           └── marketplaces.html
+│
+└── tests/
+    ├── __init__.py
+    ├── conftest.py
+    ├── test_api_endpoints.py
+    ├── test_crawler.py
+    ├── test_indexer_concurrency.py
+    ├── test_indexing.py
+    ├── test_integration.py
+    └── postman_collection.json
+```
 
-🚀 Running the Project
-1️⃣ Install dependencies
+## 🚀 Running the Project
+
+### 1️⃣ Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-2️⃣ Initialize indexing database
+### 2️⃣ Initialize indexing database
+```bash
 python init_db.py
+```
 
-3️⃣ Start the engine
+### 3️⃣ Start the engine
+```bash
 python main.py
+```
 
-4️⃣ Access UI
-http://127.0.0.1:5000
+### 4️⃣ Access UI
+Navigate to: `http://127.0.0.1:5000`
 
-📌 Contribution Guidelines
+## 📌 Contribution Guidelines
 
-Write modular PRs
+- Write modular PRs
+- Add / update tests for every feature
+- Log API failures via monitoring module
+- Document new feature behavior in `/API_DOCUMENTATION.md`
 
-Add / update tests for every feature
+## 📄 License
 
-Log API failures via monitoring module
+[Add your license information here]
 
-Document new feature behavior in /API_DOCUMENTATION.md
+## 🤝 Support
+
+For issues, questions, or contributions, please open an issue or submit a pull request.
