@@ -38,12 +38,19 @@ class Config:
     
     # Hybrid Search Configuration
     HYBRID_BLEND_RATIO = float(os.getenv('HYBRID_BLEND_RATIO', 0.5))
-    HYBRID_LOCAL_BOOST = float(os.getenv('HYBRID_LOCAL_BOOST', 1.2))
+    HYBRID_LOCAL_BOOST = float(os.getenv('HYBRID_LOCAL_BOOST', 1.5))
     HYBRID_FRESHNESS_BOOST = float(os.getenv('HYBRID_FRESHNESS_BOOST', 1.1))
     HYBRID_DEDUPLICATE = os.getenv('HYBRID_DEDUPLICATE', 'true').lower() == 'true'
     
+
+    DEFAULT_MAX_RESULTS = int(os.getenv('DEFAULT_MAX_RESULTS', 50)) # Set default results to 50
+    LOCAL_MAX_RESULTS = int(os.getenv('LOCAL_MAX_RESULTS', 50))
+    SERPAPI_MAX_RESULTS = int(os.getenv('SERPAPI_MAX_RESULTS', 50))
+    GOOGLE_MAX_RESULTS = int(os.getenv('GOOGLE_MAX_RESULTS', 50))
+    MARKETPLACE_MAX_RESULTS = int(os.getenv('MARKETPLACE_MAX_RESULTS', 50))
+    JOBS_MAX_RESULTS = int(os.getenv('JOBS_MAX_RESULTS', 50))
     # Crawler Settings
-    CRAWLER_MAX_WORKERS = int(os.getenv('CRAWLER_MAX_WORKERS', 10))
+    CRAWLER_MAX_WORKERS = int(os.getenv('CRAWLER_MAX_WORKERS', 100))
     CRAWLER_TIMEOUT = int(os.getenv('CRAWLER_TIMEOUT', 10))
     CRAWLER_RESPECT_ROBOTS = os.getenv('CRAWLER_RESPECT_ROBOTS', 'true').lower() == 'true'
     CRAWLER_USER_AGENT = os.getenv('CRAWLER_USER_AGENT', 'CustomSearchBot/1.0')

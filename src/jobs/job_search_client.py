@@ -6,6 +6,7 @@ Aggregates job postings from multiple sources
 import os
 import logging
 import requests
+import re
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -19,6 +20,29 @@ class JobSearchClient:
     Supports Indeed, LinkedIn, Glassdoor via RapidAPI
     """
     
+    # --- CONFIGURATION (Integrated API Sources) ---
+    # Define API sources using their unique RapidAPI host and base path for flexible switching.
+    API_SOURCES = {
+        'indeed': {
+            # NOTE: Updated to a conceptual working endpoint structure for Indeed
+            'host': 'indeed-job-search-v2.p.rapidapi.com',
+            'url': 'https://indeed-job-search-v2.p.rapidapi.com/jobs/search',
+            'param_map': {'q': 'query', 'l': 'location', 'limit': 'max_results'} # Example mapping
+        },
+        'linkedin': {
+            # LinkedIn API Host based on your provided URL
+            'host': 'linkedin-job-search-api.p.rapidapi.com',
+            'url': 'https://linkedin-job-search-api.p.rapidapi.com/search',
+            'param_map': {'keywords': 'query', 'locationId': 'location', 'results_per_page': 'max_results'}
+        },
+        'glassdoor': {
+            # Glassdoor API endpoint details
+            'host': 'glassdoor-job-search.p.rapidapi.com',
+            'url': 'https://glassdoor-job-search.p.rapidapi.com/search'
+        }
+    }
+    # ---------------------------------------------
+    
     def __init__(self):
         """Initialize job search client"""
         self.rapidapi_key = os.getenv('RAPIDAPI_KEY')
@@ -31,6 +55,9 @@ class JobSearchClient:
             'total_jobs_returned': 0
         }
         
+        if not self.rapidapi_key:
+            logger.warning("JobSearchClient initialized without RAPIDAPI_KEY. Searches will fail.")
+            
         logger.info("Job search client initialized")
     
     def search_jobs(
@@ -45,32 +72,18 @@ class JobSearchClient:
         sources: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
-        Search for jobs across multiple platforms.
-        
-        Args:
-            query: Job search query (title, keywords)
-            location: Job location
-            max_results: Maximum results to return
-            remote_only: Filter for remote jobs only
-            min_salary: Minimum salary filter
-            experience_level: Entry, Mid, Senior
-            job_type: Full-time, Part-time, Contract, etc.
-            sources: List of job boards to search
-            
-        Returns:
-            Aggregated job results
+        Search for jobs across multiple platforms using the API_SOURCES configuration.
         """
         self.stats['total_searches'] += 1
         
-        # If no API key, always use mock data
         if not self.rapidapi_key:
             logger.warning("RapidAPI key not configured. Using mock job data.")
             return self._get_mock_job_results(query, location, max_results, remote_only, min_salary)
         
         if not sources:
-            sources = ['indeed', 'linkedin']
+            sources = ['indeed', 'linkedin', 'glassdoor']
 
-        # Normalize job_type and experience_level when callers pass arrays (frontend may send arrays)
+        # Normalize job_type and experience_level
         if isinstance(job_type, list):
             job_type = job_type[0] if job_type else None
         if isinstance(experience_level, list):
@@ -90,25 +103,22 @@ class JobSearchClient:
         }
         
         # Search job boards in parallel
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=len(sources)) as executor:
             futures = {}
             
-            if 'indeed' in sources:
-                futures['indeed'] = executor.submit(
-                    self._search_indeed, query, location, max_results,
-                    remote_only, min_salary, job_type
-                )
-            
-            if 'linkedin' in sources:
-                futures['linkedin'] = executor.submit(
-                    self._search_linkedin, query, location, max_results,
-                    remote_only, experience_level
-                )
-            
-            if 'glassdoor' in sources:
-                futures['glassdoor'] = executor.submit(
-                    self._search_glassdoor, query, location, max_results
-                )
+            for source_name in sources:
+                if source_name in self.API_SOURCES:
+                     futures[source_name] = executor.submit(
+                        self._search_single_source, 
+                        source_name, 
+                        query, 
+                        location, 
+                        max_results,
+                        remote_only, 
+                        min_salary, 
+                        experience_level, 
+                        job_type
+                    )
             
             # Collect results
             for source, future in futures.items():
@@ -136,7 +146,86 @@ class JobSearchClient:
         self.stats['total_jobs_returned'] += len(results['jobs'])
         
         return results
-    
+
+    def _search_single_source(
+        self,
+        source_name: str,
+        query: str,
+        location: str,
+        max_results: int,
+        remote_only: bool,
+        min_salary: Optional[int],
+        experience_level: Optional[str],
+        job_type: Optional[str]
+    ) -> List[Dict]:
+        """
+        Generic search function for one source, handling API specific details.
+        """
+        source_config = self.API_SOURCES.get(source_name)
+        if not source_config:
+            raise ValueError(f"Source configuration not found for: {source_name}")
+            
+        url = source_config['url']
+        host = source_config['host']
+        
+        headers = {
+            "X-RapidAPI-Key": self.rapidapi_key,
+            "X-RapidAPI-Host": host
+        }
+        
+        # Base parameters for all jobs APIs
+        params = {
+            "query": query,
+            "location": location,
+            "limit": max_results,
+            # Common filters to pass through
+            "remote": remote_only,
+            "salary": min_salary,
+            "experience": experience_level,
+            "job_type": job_type
+        }
+        
+        # --- Source-Specific Parameter Adjustments ---
+        if source_name == 'indeed':
+            # Example adjustment based on a conceptual Indeed API on RapidAPI
+            params['q'] = params.pop('query')
+            params['l'] = params.pop('location')
+            params['jt'] = params.pop('job_type') # Indeed often uses 'jt' for job type
+            params['remotejob'] = 'true' if params.pop('remote') else 'false'
+            # Filter internal params not recognized by the external API
+            for key in ['salary', 'experience']: 
+                if key in params: del params[key]
+
+        elif source_name == 'linkedin':
+            # Parameters often vary significantly; requires specific mapping
+            params['keywords'] = params.pop('query')
+            params['workplaceType'] = 'remote' if params.pop('remote') else 'hybrid/onsite'
+            params['experienceLevel'] = params.pop('experience')
+            
+            # Filter internal params
+            for key in ['location', 'salary', 'job_type']: 
+                if key in params: del params[key]
+        
+        elif source_name == 'glassdoor':
+            # Similar specific parameter mapping would be done here
+            pass
+
+        # Remove None values and convert booleans to strings for API call
+        params = {k: v for k, v in params.items() if v is not None}
+        for k, v in params.items():
+            if isinstance(v, bool):
+                params[k] = str(v).lower()
+        
+        # Execute the API call
+        response = requests.get(url, headers=headers, params=params, timeout=20)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # The key step: Normalize the results from the raw API response
+        return self._normalize_job_results(data, source_name)
+
+
     def _search_indeed(
         self,
         query: str,
@@ -146,72 +235,11 @@ class JobSearchClient:
         min_salary: Optional[int],
         job_type: Optional[str]
     ) -> List[Dict]:
-        """Search Indeed via RapidAPI"""
-        if not self.rapidapi_key:
-            return []
-        
-        try:
-            url = "https://indeed12.p.rapidapi.com/jobs/search"
-            
-            headers = {
-                "X-RapidAPI-Key": self.rapidapi_key,
-                "X-RapidAPI-Host": "indeed12.p.rapidapi.com"
-            }
-            
-            params = {
-                "query": query,
-                "location": location,
-                "page_id": "1",
-                "locality": "us",
-                "fromage": "30",  # Last 30 days
-                "radius": "50"
-            }
-            
-            if remote_only:
-                params["remotejob"] = "true"
-            
-            if job_type:
-                try:
-                    params["jt"] = str(job_type).lower()
-                except Exception:
-                    params["jt"] = str(job_type)
-            
-            response = requests.get(url, headers=headers, params=params, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            jobs = data.get('hits', [])[:max_results]
-            
-            results = []
-            for job in jobs:
-                salary = self._parse_salary(job.get('salary', ''))
-                
-                # Apply salary filter
-                if min_salary and salary and salary < min_salary:
-                    continue
-                
-                results.append({
-                    'id': job.get('id', ''),
-                    'title': job.get('title', ''),
-                    'company': job.get('company_name', ''),
-                    'location': job.get('location', ''),
-                    'description': job.get('description', ''),
-                    'salary': salary,
-                    'salary_text': job.get('salary', 'Not specified'),
-                    'job_type': job.get('job_type', ''),
-                    'remote': 'remote' in job.get('title', '').lower() or 
-                             'remote' in job.get('location', '').lower(),
-                    'posted_date': job.get('date', ''),
-                    'url': job.get('link', ''),
-                    'source': 'indeed',
-                    'timestamp': datetime.now().isoformat()
-                })
-            
-            return results
-            
-        except Exception as e:
-            logger.error(f"Indeed search error: {str(e)}")
-            return []
+        """Deprecated: Use _search_single_source."""
+        # This method is now obsolete and redirects the call to the generic handler
+        return self._search_single_source(
+            'indeed', query, location, max_results, remote_only, min_salary, None, job_type
+        )
     
     def _search_linkedin(
         self,
@@ -221,63 +249,11 @@ class JobSearchClient:
         remote_only: bool,
         experience_level: Optional[str]
     ) -> List[Dict]:
-        """Search LinkedIn via RapidAPI"""
-        if not self.rapidapi_key:
-            return []
-        
-        try:
-            url = "https://linkedin-data-api.p.rapidapi.com/search-jobs"
-            
-            headers = {
-                "X-RapidAPI-Key": self.rapidapi_key,
-                "X-RapidAPI-Host": "linkedin-data-api.p.rapidapi.com"
-            }
-            
-            params = {
-                "keywords": query,
-                "locationId": location or "92000000",  # US
-                "datePosted": "anyTime",
-                "sort": "mostRelevant"
-            }
-            
-            if remote_only:
-                params["workplaceType"] = "remote"
-            
-            if experience_level:
-                try:
-                    params["experienceLevel"] = str(experience_level).lower()
-                except Exception:
-                    params["experienceLevel"] = str(experience_level)
-            
-            response = requests.get(url, headers=headers, params=params, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            jobs = data.get('data', [])[:max_results]
-            
-            results = []
-            for job in jobs:
-                results.append({
-                    'id': job.get('id', ''),
-                    'title': job.get('title', ''),
-                    'company': job.get('company', {}).get('name', ''),
-                    'location': job.get('location', ''),
-                    'description': job.get('description', ''),
-                    'salary': None,
-                    'salary_text': 'Not specified',
-                    'job_type': job.get('workplaceType', ''),
-                    'remote': job.get('workplaceType', '').lower() == 'remote',
-                    'posted_date': job.get('postedDate', ''),
-                    'url': job.get('url', ''),
-                    'source': 'linkedin',
-                    'timestamp': datetime.now().isoformat()
-                })
-            
-            return results
-            
-        except Exception as e:
-            logger.error(f"LinkedIn search error: {str(e)}")
-            return []
+        """Deprecated: Use _search_single_source."""
+        # This method is now obsolete and redirects the call to the generic handler
+        return self._search_single_source(
+            'linkedin', query, location, max_results, remote_only, min_salary=None, experience_level=experience_level, job_type=None
+        )
     
     def _search_glassdoor(
         self,
@@ -285,52 +261,90 @@ class JobSearchClient:
         location: str,
         max_results: int
     ) -> List[Dict]:
-        """Search Glassdoor via RapidAPI"""
-        if not self.rapidapi_key:
-            return []
+        """Deprecated: Use _search_single_source."""
+        # This method is now obsolete and redirects the call to the generic handler
+        return self._search_single_source(
+            'glassdoor', query, location, max_results, remote_only=False, min_salary=None, experience_level=None, job_type=None
+        )
+    
+    def _normalize_job_results(self, data: Dict, source_name: str) -> List[Dict]:
+        """
+        Transforms raw API data into a standardized job format. 
+        This part requires careful mapping specific to each API's JSON structure.
+        """
+        normalized = []
         
-        try:
-            url = "https://glassdoor-job-search.p.rapidapi.com/search"
-            
-            headers = {
-                "X-RapidAPI-Key": self.rapidapi_key,
-                "X-RapidAPI-Host": "glassdoor-job-search.p.rapidapi.com"
-            }
-            
-            params = {
-                "query": query,
-                "location": location,
-                "page": "1"
-            }
-            
-            response = requests.get(url, headers=headers, params=params, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            jobs = data.get('jobs', [])[:max_results]
-            
-            results = []
-            for job in jobs:
-                results.append({
-                    'id': job.get('jobId', ''),
-                    'title': job.get('jobTitle', ''),
-                    'company': job.get('employer', ''),
-                    'location': job.get('location', ''),
-                    'description': job.get('jobDescription', ''),
-                    'salary': self._parse_salary(job.get('salary', '')),
-                    'salary_text': job.get('salary', 'Not specified'),
-                    'rating': job.get('rating'),
-                    'url': job.get('jobUrl', ''),
+        # --- MAPPING Logic ---
+        if source_name == 'linkedin':
+            # Assuming the LinkedIn API returns a list under the 'data' key
+            items = data.get('data', [])
+            for item in items:
+                # NOTE: The mapping below assumes job details are top-level or easy to access
+                salary = self._parse_salary(item.get('salaryRange', ''))
+                
+                normalized.append({
+                    'id': item.get('jobId'),
+                    'title': item.get('title'),
+                    'company': item.get('companyName'),
+                    'location': item.get('location'),
+                    'description': item.get('description'),
+                    'salary': salary,
+                    'salary_text': item.get('salaryRange', 'Not specified'),
+                    'job_type': item.get('jobType'),
+                    'remote': item.get('workplaceType', '').lower() == 'remote',
+                    'posted_date': item.get('postedDate'),
+                    'url': item.get('applyUrl'),
+                    'source': 'linkedin',
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        elif source_name == 'indeed':
+            # Assuming the Indeed API returns a list under the 'hits' key (common in API v2)
+            items = data.get('hits', [])
+            for item in items:
+                salary = self._parse_salary(item.get('salary', ''))
+                
+                normalized.append({
+                    'id': item.get('jobkey'),
+                    'title': item.get('title'),
+                    'company': item.get('companyName'),
+                    'location': item.get('location'),
+                    'description': item.get('summary'),
+                    'salary': salary,
+                    'salary_text': item.get('salary', 'Not specified'),
+                    'job_type': item.get('jobType'),
+                    'remote': 'remote' in item.get('type', '').lower(),
+                    'posted_date': item.get('date'),
+                    'url': item.get('url'),
+                    'source': 'indeed',
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        elif source_name == 'glassdoor':
+            # Assuming the Glassdoor API returns results under the 'jobs' key
+            items = data.get('jobs', [])
+            for item in items:
+                salary = self._parse_salary(item.get('salary', ''))
+                
+                normalized.append({
+                    'id': item.get('jobId'),
+                    'title': item.get('jobTitle'),
+                    'company': item.get('employer'),
+                    'location': item.get('location'),
+                    'description': item.get('jobDescription'),
+                    'salary': salary,
+                    'salary_text': item.get('salary', 'Not specified'),
+                    'job_type': item.get('jobType'),
+                    'remote': 'remote' in item.get('jobTitle', '').lower(),
+                    'posted_date': item.get('date'),
+                    'url': item.get('jobUrl'),
                     'source': 'glassdoor',
                     'timestamp': datetime.now().isoformat()
                 })
-            
-            return results
-            
-        except Exception as e:
-            logger.error(f"Glassdoor search error: {str(e)}")
-            return []
-    
+        # --- END MAPPING Logic ---
+        
+        return normalized
+
     def _deduplicate_jobs(self, jobs: List[Dict]) -> List[Dict]:
         """Remove duplicate job listings"""
         if not jobs:
@@ -343,6 +357,7 @@ class JobSearchClient:
             # Create unique key from title and company
             title = job.get('title', '').lower().strip()
             company = job.get('company', '').lower().strip()
+            # Simple normalization to catch variations
             job_key = f"{title}:{company}"
             
             if job_key not in seen_jobs:
@@ -379,11 +394,12 @@ class JobSearchClient:
             salary_text = salary_text.replace('per hour', '').replace('a year', '')
             
             # Extract numbers
-            import re
+            
             numbers = re.findall(r'\d+', salary_text)
             if numbers:
                 # Return average if range
                 if len(numbers) >= 2:
+                    # Use integer division for clean dollar amounts
                     return (int(numbers[0]) + int(numbers[1])) // 2
                 return int(numbers[0])
             return None

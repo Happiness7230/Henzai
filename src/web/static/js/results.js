@@ -87,6 +87,24 @@ async function performSearch() {
         Utils.hideLoading();
     }
 }
+const RESULTS_PER_PAGE = 10;
+const MAX_PAGES = 5;
+const TOTAL_MAX_RESULTS = RESULTS_PER_PAGE * MAX_PAGES; // 50
+
+async function fetchResults(query, mode, pageNumber) {
+    // Calculate the offset based on the requested page number
+    const offset = (pageNumber - 1) * RESULTS_PER_PAGE;
+
+    const apiUrl = `/api/search?q=${encodeURIComponent(query)}&mode=${mode}&limit=${RESULTS_PER_PAGE}&offset=${offset}`;
+
+
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    
+    // Now the data object contains up to 10 results for the specific page.
+    displayResults(data.data.results);
+    renderPagination(data.data.total, pageNumber);
+}
 
 function displayResults(data) {
     // Defensive checks: ensure we have a valid results object

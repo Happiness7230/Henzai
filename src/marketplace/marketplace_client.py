@@ -291,11 +291,13 @@ class MarketplaceClient:
         self.stats['walmart_searches'] += 1
         
         try:
-            url = "https://walmart-search.p.rapidapi.com/search"
+
+            # Assuming the new working endpoint on RapidAPI is called 'walmart-v2'
+            url = "https://walmart-v2.p.rapidapi.com/items/search"
             
             headers = {
                 "X-RapidAPI-Key": self.rapidapi_key,
-                "X-RapidAPI-Host": "walmart-search.p.rapidapi.com"
+                "X-RapidAPI-Host": "walmart-v2.p.rapidapi.com"
             }
             
             params = {

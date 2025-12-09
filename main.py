@@ -18,7 +18,7 @@ from src.indexing.indexer import Indexer
 from src.processing.tokenizer import Tokenizer
 from src.ranking.advanced_ranker import AdvancedRanker
 from src.storage.database import Database
-from src.web.app import app, set_components
+from src.web.app import app, set_components, initialize_components
 
 
 def setup_logging(log_level: str = 'INFO') -> None:
@@ -49,6 +49,7 @@ def main() -> None:
     logger.info("Initializing Search Engine Components")
     logger.info("="*60)
     
+    logger = logging.getLogger(__name__)
     # Initialize core components
     tokenizer = None
     database = None

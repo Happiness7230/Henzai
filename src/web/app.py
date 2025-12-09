@@ -386,7 +386,9 @@ def api_search():
 
     Query Parameters / JSON Body:
         q (str): Search query
-        max_results (int): Maximum results (default: 10)
+        max_results (int): Maximum results (default: 50, overall search space cap)
+        limit (int): Results per page (default: 10)
+        offset (int): Starting index for results (default: 0)
         mode (str): Search mode override (local/serpapi/hybrid)
         safe_search (bool): Enable safe search
         region (str): Region code (e.g., 'us-en')
@@ -394,7 +396,7 @@ def api_search():
         filters (dict): Advanced filters
     
     Returns:
-        JSON with search results
+        JSON with search results (paged)
     """
     start_time = datetime.now()
     
@@ -424,7 +426,20 @@ def api_search():
                 'status': 'error'
             }), 400
         
-        max_results = int(data.get('max_results', 70))
+        # --- PAGINATION PARAMETERS (New) ---
+        limit = int(data.get('limit', 10)) # Results per page (e.g., 10)
+        offset = int(data.get('offset', 0)) # Starting index (e.g., 0, 10, 20)
+        
+        # Determine the maximum ranked results the SearchManager must process.
+        # This is the client's requested global cap (default 50) 
+        # but must be large enough to fulfill the current page request (offset + limit).
+        client_max_cap = int(data.get('max_results', 50)) 
+        
+        # Ensure max_results fetched is max(client_max_cap, offset + limit) up to a server cap (e.g., 100)
+        MAX_SERVER_CAP = 100 # Assuming this aligns with Config.RANKING_MAX_RESULTS
+        max_fetch = max(client_max_cap, offset + limit)
+        max_results_to_fetch = min(MAX_SERVER_CAP, max_fetch)
+        
         mode_override = data.get('mode')
         safe_search = data.get('safe_search', 'true').lower() == 'true'
         region = data.get('region', 'wt-wt')
@@ -436,10 +451,10 @@ def api_search():
         if mode_override and mode_override in ['local', 'serpapi', 'hybrid']:
             current_search_manager.set_mode(mode_override)
         
-        # Perform search
+        # Perform search (Manager fetches up to max_results_to_fetch ranked items)
         results = current_search_manager.search(
             query=query,
-            max_results=max_results,
+            max_results=max_results_to_fetch, # Use the calculated max fetch size
             filters=filters,
             safe_search=safe_search,
             region=region,
@@ -450,11 +465,30 @@ def api_search():
         if mode_override:
             current_search_manager.set_mode(original_mode)
         
+        # --- PAGINATION SLICING & METADATA UPDATE (New) ---
+        
+        # 1. Store the total count BEFORE slicing (for frontend pagination display)
+        total_found = results['total']
+        
+        # 2. Apply pagination slicing
+        start_index = offset
+        end_index = offset + limit
+        
+        # Apply slicing to the ranked results list, safely handling array boundaries
+        sliced_results = results['results'][start_index:end_index]
+
+        # 3. Update the results structure to return only the current page's data
+        results['results'] = sliced_results
+        results['total'] = total_found # Preserve the true total count for pagination
+        
+        # --- END PAGINATION SLICING ---
+        
         # Track analytics
         if analytics_store:
+            # Track using the original total results found
             analytics_store.track_search(
                 query=query,
-                results_count=len(results.get('results', [])),
+                results_count=total_found, 
                 response_time=results['metadata'].get('response_time', 0),
                 mode=results['metadata'].get('mode', 'unknown')
             )
@@ -463,13 +497,13 @@ def api_search():
         if metrics_collector:
             metrics_collector.record_search(
                 query_length=len(query),
-                results_count=len(results.get('results', [])),
+                results_count=total_found, 
                 response_time=(datetime.now() - start_time).total_seconds()
             )
         
         return jsonify({
             'status': 'success',
-            'data': results
+            'data': results # Returns the modified results dict, which contains 'results' (sliced) and 'total' (true total)
         })
     
     except ValueError as e:
@@ -1322,18 +1356,18 @@ def handle_exception(error):
 # Application Entry Point
 # ============================================================================
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     # Print configuration
-    logger.info("Starting Flask application...")
-    Config.print_config()
+    #logger.info("Starting Flask application...")
+    #Config.print_config()
     
     # Initialize all components
-    initialize_components()
-    search_manager = SearchManager()
-    search_manager.load()
+    #initialize_components()
+    #search_manager = SearchManager()
+    #search_manager.load()
     
     # Run app
-    app.run(
-        port = int(os.environ.get("PORT", 5000)),
-        host='0.0.0.0',
-    )
+    #app.run(
+        #port = int(os.environ.get("PORT", 5000)),
+        #host='0.0.0.0',
+    #)
